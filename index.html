@@ -1,0 +1,1489 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabṣirah (تبصرة): Discover Creation, Science &amp; Reflection</title>
+    <meta
+      name="description"
+      content="An immersive WebXR journey across four living biomes: Polar Aurora, Living Rainforest, Coral Cathedral, and Desert Oasis."
+    />
+    <meta property="og:title" content="Tabṣirah (تبصرة): Discover Creation, Science &amp; Reflection" />
+    <meta
+      property="og:description"
+      content="Explore procedural GLSL environments, interactive scientific models, and contemplative Qur'anic reflections in WebXR and Mixed Reality."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+    <style>
+      :root {
+        --bg-hud: rgba(6, 12, 24, 0.88);
+        --bg-panel: rgba(8, 15, 30, 0.95);
+        --bg-elevated: rgba(15, 25, 45, 0.92);
+        --border-hairline: rgba(255, 255, 255, 0.14);
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --accent-sky: #38bdf8;
+        --accent-emerald: #34d399;
+        --accent-gold: #fbbf24;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #040713;
+        color: var(--text-primary);
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a-scene {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .hud-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 12px 16px;
+      }
+
+      /* Single-Row Top Bar */
+      .hud-topbar {
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 8px 14px;
+        background: var(--bg-hud);
+        border: 1px solid var(--border-hairline);
+        border-radius: 12px;
+      }
+
+      .brand-wrap {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .brand-wordmark {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.08rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--text-primary);
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .brand-ar {
+        font-family: 'Amiri', serif;
+        font-size: 1.05rem;
+        color: var(--accent-gold);
+        white-space: nowrap;
+      }
+
+      .scene-nav-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        overflow-x: auto;
+        min-width: 0;
+        scrollbar-width: none;
+      }
+
+      .scene-nav-row::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-btn,
+      .hud-btn,
+      .vr-btn,
+      .dock-collapse-btn,
+      .inspector-close {
+        appearance: none;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition:
+          background-color 150ms ease,
+          color 150ms ease,
+          border-color 150ms ease,
+          opacity 150ms ease;
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 6px 11px;
+        border-radius: 8px;
+      }
+
+      .nav-btn:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .nav-btn.is-active {
+        color: #030712;
+        background: var(--accent-sky);
+        font-weight: 600;
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .vr-btn {
+        background: var(--accent-sky);
+        border: 1px solid var(--accent-sky);
+        color: #030712;
+        font-size: 0.77rem;
+        font-weight: 700;
+        padding: 6px 13px;
+        border-radius: 8px;
+      }
+
+      .vr-btn:hover {
+        background: #7dd3fc;
+        border-color: #7dd3fc;
+      }
+
+      /* Opening Invitation Overlay over live 3D Aurora */
+      .opening-overlay {
+        pointer-events: auto;
+        position: fixed;
+        inset: 0;
+        z-index: 45;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: radial-gradient(circle at 50% 42%, rgba(4, 9, 20, 0.35), rgba(3, 7, 18, 0.76));
+      }
+
+      .opening-overlay[hidden] {
+        display: none;
+      }
+
+      .opening-card {
+        width: min(560px, 100%);
+        background: var(--bg-panel);
+        border: 1px solid rgba(56, 189, 248, 0.38);
+        border-radius: 18px;
+        padding: 28px 30px;
+        text-align: center;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+      }
+
+      .opening-ar {
+        font-family: 'Amiri', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        margin: 0 0 2px;
+        line-height: 1.3;
+      }
+
+      .opening-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      .opening-tagline {
+        font-size: 0.94rem;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        margin: 0 auto 18px;
+        max-width: 44ch;
+      }
+
+      .opening-steps {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .opening-steps span {
+        padding: 4px 10px;
+        border: 1px solid var(--border-hairline);
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .opening-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .opening-primary-btn {
+        appearance: none;
+        cursor: pointer;
+        border: 1px solid var(--accent-sky);
+        background: var(--accent-sky);
+        color: #030712;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        padding: 10px 20px;
+        border-radius: 10px;
+      }
+
+      .opening-primary-btn:hover {
+        background: #7dd3fc;
+      }
+
+      .opening-secondary-btn {
+        appearance: none;
+        cursor: pointer;
+        border: 1px solid rgba(52, 211, 153, 0.52);
+        background: rgba(52, 211, 153, 0.14);
+        color: #d1fae5;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 10px;
+      }
+
+      .opening-secondary-btn:hover {
+        background: rgba(52, 211, 153, 0.24);
+      }
+
+      /* Guided Tour Floating Bar */
+      .tour-bar {
+        pointer-events: auto;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 7px 14px;
+        background: var(--bg-panel);
+        border: 1px solid rgba(52, 211, 153, 0.45);
+        border-radius: 10px;
+        margin-top: 8px;
+      }
+
+      .tour-bar[hidden] {
+        display: none;
+      }
+
+      .tour-status {
+        font-size: 0.77rem;
+        font-weight: 600;
+        color: #d1fae5;
+        white-space: nowrap;
+      }
+
+      .tour-progress-track {
+        width: 110px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .tour-progress-fill {
+        width: 0%;
+        height: 100%;
+        background: var(--accent-emerald);
+        transition: width 180ms linear;
+      }
+
+      /* Subtle Cinematic Widescreen Framing (never blocks pointer or HUD) */
+      .cinematic-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 0;
+        background: #020617;
+        pointer-events: none;
+        z-index: 15;
+        transition: height 320ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .cinematic-bar-top {
+        top: 0;
+      }
+
+      .cinematic-bar-bottom {
+        bottom: 0;
+      }
+
+      body.is-cinematic .cinematic-bar {
+        height: 14px;
+      }
+
+      /* Mode 3: Calm Reflection & Science Panel (shown on demand, never permanent) */
+      .reflect-panel {
+        pointer-events: auto;
+        position: fixed;
+        left: 50%;
+        top: calc(50% - 14px);
+        transform: translate(-50%, -50%);
+        width: min(680px, calc(100vw - 32px));
+        max-height: calc(100vh - 185px);
+        overflow-y: auto;
+        background: var(--bg-panel);
+        border: 1px solid rgba(251, 191, 36, 0.42);
+        border-radius: 16px;
+        padding: 20px 24px;
+        z-index: 35;
+        box-shadow: 0 20px 56px rgba(0, 0, 0, 0.68);
+      }
+
+      .reflect-panel:not([hidden]) {
+        display: block;
+      }
+
+      .reflect-panel[hidden] {
+        display: none;
+      }
+
+      .reflect-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .reflect-biome-label {
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--accent-sky);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .reflect-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.12rem;
+        font-weight: 700;
+        margin: 2px 0 0;
+        color: var(--text-primary);
+      }
+
+      .reflect-section {
+        margin-top: 14px;
+      }
+
+      .reflect-section-kicker {
+        font-size: 0.71rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        margin: 0 0 6px;
+      }
+
+      .reflect-arabic {
+        font-family: 'Amiri', serif;
+        font-size: clamp(1.32rem, 2.4vw, 1.7rem);
+        font-weight: 700;
+        line-height: 1.58;
+        color: #fef3c7;
+        margin: 0 0 6px;
+      }
+
+      .reflect-translation {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-primary);
+        margin: 0 0 4px;
+      }
+
+      .reflect-surah {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+      }
+
+      .reflect-body {
+        font-size: 0.84rem;
+        line-height: 1.52;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      .reflect-science-box {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: rgba(14, 116, 144, 0.18);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .reflect-science-box.is-highlighted {
+        border-color: rgba(52, 211, 153, 0.75);
+        background: rgba(14, 116, 144, 0.34);
+        box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.24);
+      }
+
+      .reflect-science-box .reflect-section-kicker {
+        color: var(--accent-emerald);
+      }
+
+      .reflect-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Bottom Contemplation Dock & Mode 2 Contextual Discover Card */
+      .hud-bottom-stack {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .dock-collapse-btn {
+        pointer-events: auto;
+        background: var(--bg-hud);
+        border: 1px solid var(--border-hairline);
+        color: var(--text-secondary);
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 4px 11px;
+        border-radius: 7px;
+      }
+
+      .dock-collapse-btn:hover {
+        color: var(--text-primary);
+      }
+
+      .hud-bottom-stack.is-collapsed .hud-bottom,
+      .hud-bottom-stack.is-collapsed .discover-card {
+        display: none;
+      }
+
+      .discover-card {
+        pointer-events: auto;
+        width: min(640px, 100%);
+        background: var(--bg-panel);
+        border: 1px solid rgba(52, 211, 153, 0.45);
+        border-radius: 12px;
+        padding: 12px 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+      }
+
+      .discover-card:not([hidden]) {
+        display: block;
+      }
+
+      .discover-card[hidden] {
+        display: none;
+      }
+
+      .discover-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+
+      .discover-title-row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .discover-title {
+        margin: 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: #d1fae5;
+      }
+
+      .discover-model-note {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent-sky);
+      }
+
+      .discover-summary {
+        margin: 0 0 10px;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        color: var(--text-secondary);
+      }
+
+      .discover-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .hud-bottom {
+        pointer-events: auto;
+        position: relative;
+        width: min(980px, 100%);
+        max-width: 100%;
+        background: var(--bg-hud);
+        border: 1px solid var(--border-hairline);
+        border-radius: 14px;
+        padding: 8px 14px;
+      }
+
+      .explore-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+
+      .explore-identity {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+
+      .scene-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .interaction-hint {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      .journey-stepper {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.71rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        flex-wrap: wrap;
+      }
+
+      .journey-step {
+        appearance: none;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.71rem;
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        cursor: pointer;
+        transition:
+          background-color 150ms ease,
+          color 150ms ease,
+          border-color 150ms ease;
+      }
+
+      .journey-step:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.24);
+      }
+
+      .journey-step.is-active {
+        color: #f0f9ff;
+        background: rgba(56, 189, 248, 0.22);
+        border-color: rgba(56, 189, 248, 0.55);
+        font-weight: 600;
+      }
+
+      .transport-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px 8px;
+        padding-top: 7px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        flex-wrap: wrap;
+      }
+
+      .wonder-context-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 5px 0 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .wonder-context-bar[hidden],
+      .transport-group[hidden] {
+        display: none;
+      }
+
+      .wonder-context-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+        white-space: nowrap;
+      }
+
+      .transport-group {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .hud-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-hairline);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 5px 9px;
+        border-radius: 8px;
+      }
+
+      .hud-btn:hover:not(:disabled) {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .hud-btn.is-active,
+      .hud-btn[aria-pressed='true'] {
+        border-color: var(--accent-sky);
+        background: rgba(56, 189, 248, 0.2);
+        color: #f0f9ff;
+        font-weight: 600;
+      }
+
+      .hud-btn-cta {
+        border-color: rgba(52, 211, 153, 0.5);
+        background: rgba(52, 211, 153, 0.16);
+        color: #d1fae5;
+        font-weight: 600;
+      }
+
+      .hud-btn-cta:hover {
+        background: rgba(52, 211, 153, 0.28);
+        color: #ffffff;
+      }
+
+      .hud-btn-gold {
+        border-color: rgba(251, 191, 36, 0.48);
+        background: rgba(251, 191, 36, 0.14);
+        color: #fef3c7;
+        font-weight: 600;
+      }
+
+      .hud-btn-gold:hover {
+        background: rgba(251, 191, 36, 0.24);
+      }
+
+      .inspector-close {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-hairline);
+        color: var(--text-secondary);
+        font-size: 0.72rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+      }
+
+      .inspector-close:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .chronos-slider {
+        width: 84px;
+        height: 4px;
+        accent-color: var(--accent-gold);
+        cursor: pointer;
+      }
+
+      .chronos-readout {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+        min-width: 58px;
+        text-align: right;
+      }
+
+      .narration-btn-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(52, 211, 153, 0.14);
+        border: 1px solid rgba(52, 211, 153, 0.38);
+        border-radius: 8px;
+        padding: 3px 9px;
+      }
+
+      .narration-btn-wrap .hud-btn {
+        background: transparent;
+        border: none;
+        padding: 2px;
+        color: #d1fae5;
+        font-weight: 600;
+      }
+
+      .voice-wave {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 12px;
+      }
+
+      .voice-wave span {
+        display: block;
+        width: 2.5px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--accent-emerald);
+        opacity: 0.45;
+      }
+
+      .voice-wave.is-speaking span {
+        opacity: 1;
+        animation: voiceBar 780ms ease-in-out infinite alternate;
+      }
+
+      .voice-wave.is-speaking span:nth-child(2) {
+        animation-delay: 140ms;
+      }
+      .voice-wave.is-speaking span:nth-child(3) {
+        animation-delay: 280ms;
+      }
+      .voice-wave.is-speaking span:nth-child(4) {
+        animation-delay: 420ms;
+      }
+
+      @keyframes voiceBar {
+        from {
+          height: 4px;
+        }
+        to {
+          height: 12px;
+        }
+      }
+
+      /* Side-Docked Real-World Video & Field Photography Drawer */
+      .media-drawer {
+        pointer-events: auto;
+        position: fixed;
+        top: 66px;
+        right: 16px;
+        width: min(370px, calc(100vw - 32px));
+        background: var(--bg-panel);
+        border: 1px solid rgba(56, 189, 248, 0.36);
+        border-radius: 12px;
+        padding: 12px;
+        z-index: 38;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .media-drawer[hidden] {
+        display: none;
+      }
+
+      .media-drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .media-coords {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent-sky);
+      }
+
+      .media-tabs {
+        display: flex;
+        gap: 6px;
+      }
+
+      .media-frame-wrap {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #020617;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border-hairline);
+      }
+
+      .media-frame-wrap iframe,
+      .media-frame-wrap img {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        object-fit: cover;
+        display: block;
+      }
+
+      .media-caption {
+        font-size: 0.76rem;
+        line-height: 1.38;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      .media-credit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.71rem;
+        color: var(--text-muted);
+      }
+
+      /* Secondary Environment & Camera Popover Menu */
+      .more-controls-popover {
+        position: absolute;
+        bottom: 58px;
+        right: 8px;
+        width: 316px;
+        background: var(--bg-panel);
+        border: 1px solid rgba(56, 189, 248, 0.42);
+        border-radius: 12px;
+        padding: 12px 14px;
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+      }
+
+      .more-controls-popover[hidden] {
+        display: none;
+      }
+
+      .popover-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent-sky);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .popover-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 1060px) {
+        .hud-topbar {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .scene-nav-row {
+          order: 3;
+          flex-basis: 100%;
+        }
+        .media-drawer {
+          top: 108px;
+        }
+      }
+
+      /* Deep Stillness Sanctuary Mode (Floating Typography + Breathing Pacer over Living 3D Scene) */
+      body.is-stillness .hud-layer {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 420ms ease;
+      }
+
+      .hud-layer {
+        transition: opacity 320ms ease;
+      }
+
+      .stillness-veil {
+        position: fixed;
+        inset: 0;
+        z-index: 42;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 28px;
+        background: radial-gradient(circle at 50% 45%, rgba(2, 6, 23, 0.04) 45%, rgba(2, 6, 23, 0.54) 100%);
+      }
+
+      .stillness-veil[hidden] {
+        display: none;
+      }
+
+      .stillness-top-controls {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        pointer-events: auto;
+      }
+
+      .stillness-biome-kicker {
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(248, 250, 252, 0.86);
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
+      }
+
+      .stillness-verse-stage {
+        max-width: min(760px, 92vw);
+        text-align: center;
+        margin-top: -4vh;
+        text-shadow: 0 2px 22px rgba(2, 6, 23, 0.92), 0 1px 6px rgba(0, 0, 0, 0.95);
+      }
+
+      .stillness-arabic {
+        font-family: 'Amiri', serif;
+        font-size: clamp(1.65rem, 3.4vw, 2.45rem);
+        font-weight: 700;
+        line-height: 1.65;
+        color: #fef3c7;
+        margin: 0 0 10px;
+      }
+
+      .stillness-translation {
+        font-size: clamp(0.96rem, 1.5vw, 1.12rem);
+        font-weight: 500;
+        line-height: 1.55;
+        color: #f8fafc;
+        margin: 0 auto 6px;
+        max-width: 58ch;
+      }
+
+      .stillness-surah {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+        letter-spacing: 0.03em;
+      }
+
+      .stillness-breath-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .breath-ring-outer {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(251, 191, 36, 0.62);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+        transform: scale(0.84);
+        transition: transform 280ms linear, border-color 400ms ease;
+      }
+
+      .breath-ring-core {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(254, 243, 199, 0.88);
+        box-shadow: 0 0 14px rgba(251, 191, 36, 0.78);
+      }
+
+      .breath-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: rgba(248, 250, 252, 0.9);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="cinematic-bar cinematic-bar-top" aria-hidden="true"></div>
+    <div class="cinematic-bar cinematic-bar-bottom" aria-hidden="true"></div>
+
+    <!-- Deep Stillness Contemplation Sanctuary Veil (Floats over slow-motion living horizon) -->
+    <section id="stillness-veil" class="stillness-veil" aria-label="Deep Stillness Contemplative View" hidden>
+      <div class="stillness-top-controls">
+        <span id="stillness-biome-kicker" class="stillness-biome-kicker">69.65°N · Polar Aurora</span>
+        <div class="transport-group">
+          <button type="button" id="btn-stillness-next" class="hud-btn">Next Biome</button>
+          <button type="button" id="btn-exit-stillness" class="hud-btn hud-btn-gold">Exit Stillness (S)</button>
+        </div>
+      </div>
+
+      <div class="stillness-verse-stage">
+        <p id="stillness-arabic" class="stillness-arabic" dir="rtl" lang="ar"></p>
+        <p id="stillness-translation" class="stillness-translation"></p>
+        <span id="stillness-surah" class="stillness-surah"></span>
+      </div>
+
+      <div class="stillness-breath-wrap" aria-hidden="true">
+        <div id="breath-ring-outer" class="breath-ring-outer">
+          <div class="breath-ring-core"></div>
+        </div>
+        <span id="breath-phase-label" class="breath-label">Breathe in gently…</span>
+      </div>
+    </section>
+
+    <!-- Opening Invitation Overlay over live Polar Aurora fjord -->
+    <section id="opening-overlay" class="opening-overlay" role="dialog" aria-modal="true" aria-labelledby="opening-title">
+      <div class="opening-card">
+        <p class="opening-ar" dir="rtl" lang="ar">تَبْصِرَة</p>
+        <h2 id="opening-title" class="opening-title">Tabṣirah: Wonders of Creation</h2>
+        <p class="opening-tagline">
+          Discover the wonders of creation. Explore the science. Reflect on the meaning—across five living biomes in WebXR &amp; Mixed Reality.
+        </p>
+        <div class="opening-steps" aria-hidden="true">
+          <span>1. Explore Nature</span>
+          <span>2. Touch Discovery Beacons</span>
+          <span>3. Understand Science</span>
+          <span>4. Reflect on Verse</span>
+        </div>
+          <div class="opening-actions">
+          <button type="button" id="btn-begin-exploration" class="opening-primary-btn">
+            Begin Exploration
+          </button>
+          <button type="button" id="btn-begin-guided" class="opening-secondary-btn">
+            Start Cinematic Tour
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="hud-layer">
+      <div>
+        <header class="hud-topbar">
+          <div class="brand-wrap">
+            <h1 class="brand-wordmark">Tabṣirah</h1>
+            <span class="brand-ar" dir="rtl" lang="ar">تبصرة</span>
+          </div>
+
+          <nav class="scene-nav-row" aria-label="Earth Biome Stations">
+            <button type="button" class="nav-btn is-active" data-biome-btn="aurora" aria-pressed="true">
+              1. Polar Aurora
+            </button>
+            <button type="button" class="nav-btn" data-biome-btn="rainforest" aria-pressed="false">
+              2. Living Rainforest
+            </button>
+            <button type="button" class="nav-btn" data-biome-btn="ocean" aria-pressed="false">
+              3. Coral Cathedral
+            </button>
+            <button type="button" class="nav-btn" data-biome-btn="desert" aria-pressed="false">
+              4. Desert Oasis
+            </button>
+          </nav>
+
+          <div class="topbar-right">
+            <button type="button" id="btn-demo-mode" class="hud-btn hud-btn-gold" aria-pressed="false" title="Automatic Cinematic Autopilot Across All Biomes, Discovery, Field Photos, Science & Reflection">
+              Cinematic Mode
+            </button>
+            <button type="button" id="btn-enter-ar" class="hud-btn" aria-pressed="false" title="Enter Meta Quest Mixed Reality Passthrough">
+              MR Passthrough
+            </button>
+            <button type="button" id="btn-enter-vr" class="vr-btn">
+              Enter VR / MR
+            </button>
+          </div>
+        </header>
+
+        <!-- Cinematic Autopilot Control Bar (Shown when Cinematic Mode runs) -->
+        <div id="tour-bar" class="tour-bar" hidden>
+          <span id="tour-status-label" class="tour-status">Cinematic · 1/5 · Polar Aurora · 1. Explore</span>
+          <div class="tour-progress-track" aria-hidden="true">
+            <div id="tour-progress-fill" class="tour-progress-fill"></div>
+          </div>
+          <button type="button" id="btn-tour-pause" class="hud-btn" style="padding: 3px 9px;">Pause</button>
+          <button type="button" id="btn-tour-loop" class="hud-btn is-active" style="padding: 3px 9px;" aria-pressed="true">Loop: On</button>
+          <button type="button" id="btn-tour-next" class="hud-btn" style="padding: 3px 9px;">Next Biome</button>
+          <button type="button" id="btn-tour-exit" class="inspector-close">Exit Cinematic</button>
+        </div>
+      </div>
+
+      <!-- Mode 3: Calm Reflection & Scientific Context Modal -->
+      <article id="reflect-panel" class="reflect-panel inspector-card" role="dialog" aria-labelledby="reflect-title" hidden>
+        <div class="reflect-head">
+          <div>
+            <span id="reflect-biome-label" class="reflect-biome-label">69.65°N, 18.96°E · Tromsø Arctic Circle</span>
+            <h2 id="reflect-title" class="reflect-title">The Polar Aurora &amp; Magnetic Sky</h2>
+          </div>
+          <button type="button" id="btn-close-reflect" class="inspector-close">Return to Scene</button>
+        </div>
+
+        <div class="reflect-section">
+          <p class="reflect-section-kicker">Qur&apos;anic Verse &amp; Translation</p>
+          <p id="reflect-arabic-verse" class="reflect-arabic" dir="rtl" lang="ar">
+            ﴿وَلَقَدْ جَعَلْنَا فِي السَّمَاءِ بُرُوجًا وَزَيَّنَّاهَا لِلنَّاظِرِينَ﴾
+          </p>
+          <p id="reflect-translation" class="reflect-translation"></p>
+          <span id="reflect-surah-ref" class="reflect-surah"></span>
+        </div>
+
+        <div class="reflect-section">
+          <p class="reflect-section-kicker">Explanatory Reflection</p>
+          <p id="reflect-commentary" class="reflect-body"></p>
+        </div>
+
+        <div id="reflect-science-box" class="reflect-science-box">
+          <p class="reflect-section-kicker">Scientific Context</p>
+          <p id="reflect-science" class="reflect-body"></p>
+        </div>
+
+        <div class="reflect-footer">
+          <div class="transport-group">
+            <button type="button" id="btn-reflect-narrate" class="hud-btn hud-btn-cta">Narrate Passage</button>
+            <button type="button" id="btn-reflect-media" class="hud-btn">Real-World Video &amp; Photos</button>
+          </div>
+          <span id="reflection-progress-label" style="font-size: 0.72rem; color: var(--text-muted);">
+            1 / 5 Biomes Discovered · Press S for Stillness · Space for next
+          </span>
+        </div>
+      </article>
+
+      <!-- Real-World Video & Field Photography Drawer -->
+      <aside id="media-drawer" class="media-drawer" aria-label="Real-World Video and Field Photography" hidden>
+        <div class="media-drawer-head">
+          <span id="media-coords" class="media-coords">69.65°N, 18.96°E · Tromsø Arctic Circle</span>
+          <button type="button" id="btn-close-media" class="inspector-close">Close</button>
+        </div>
+
+        <div class="media-tabs">
+          <button type="button" id="btn-tab-video" class="nav-btn is-active" aria-pressed="true">
+            Documentary Video
+          </button>
+          <button type="button" id="btn-tab-photos" class="nav-btn" aria-pressed="false">
+            Field Photography
+          </button>
+        </div>
+
+        <div id="media-video-panel">
+          <div class="media-frame-wrap">
+            <iframe
+              id="media-youtube-frame"
+              title="Real-World Biome Documentary Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <p id="media-video-title" class="media-caption" style="margin-top: 6px;"></p>
+        </div>
+
+        <div id="media-photos-panel" hidden>
+          <div class="media-frame-wrap">
+            <img id="media-photo-img" alt="Real-world biome field photograph" loading="lazy" />
+          </div>
+          <p id="media-photo-caption" class="media-caption" style="margin-top: 6px;"></p>
+          <div class="media-credit-row" style="margin-top: 6px;">
+            <span id="media-photo-credit"></span>
+            <div class="transport-group">
+              <button type="button" id="btn-prev-photo" class="inspector-close">Prev</button>
+              <button type="button" id="btn-next-photo" class="inspector-close">Next</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Bottom Stack: Contextual Discover Card + Compact Explore Dock -->
+      <div id="hud-bottom-stack" class="hud-bottom-stack">
+        <!-- Mode 2: Contextual Discover Card -->
+        <aside id="discover-card" class="discover-card inspector-card" aria-live="polite" hidden>
+          <div class="discover-head">
+            <div class="discover-title-row">
+              <h3 id="discover-object-name" class="discover-title">Geomagnetic Aurora Beacon</h3>
+              <span id="discover-model-note" class="discover-model-note">Interactive educational model</span>
+            </div>
+            <button type="button" id="btn-discover-close" class="inspector-close">Dismiss</button>
+          </div>
+          <p id="discover-summary" class="discover-summary"></p>
+          <div class="discover-actions">
+            <button type="button" id="btn-discover-reflect" class="hud-btn hud-btn-gold">
+              Understand &amp; Reflect →
+            </button>
+          </div>
+        </aside>
+
+        <button type="button" id="btn-collapse-dock" class="dock-collapse-btn">
+          Hide Controls (H)
+        </button>
+
+        <!-- Mode 1: Ultra-Compact Explore Mode Bottom Bar -->
+        <section class="hud-bottom" aria-live="polite">
+          <div class="explore-header">
+            <div class="explore-identity">
+              <h2 id="hud-biome-title" class="scene-title">The Polar Aurora &amp; Magnetic Sky</h2>
+              <p id="hud-hint" class="interaction-hint">
+                Touch the glowing beacon in 3D or sweep across the sky.
+              </p>
+            </div>
+
+            <div class="journey-stepper" role="tablist" aria-label="Journey stage">
+              <button type="button" id="step-explore" class="journey-step is-active" role="tab" aria-selected="true">1. Explore</button>
+              <span aria-hidden="true">›</span>
+              <button type="button" id="step-discover" class="journey-step" role="tab" aria-selected="false">2. Discover</button>
+              <span aria-hidden="true">›</span>
+              <button type="button" id="step-understand" class="journey-step" role="tab" aria-selected="false">3. Understand</button>
+              <span aria-hidden="true">›</span>
+              <button type="button" id="step-reflect" class="journey-step" role="tab" aria-selected="false">4. Reflect</button>
+            </div>
+          </div>
+
+          <div id="wonder-context-bar" class="wonder-context-bar" hidden>
+            <span id="wonder-context-label" class="wonder-context-label">Interactive Model Control</span>
+            <div id="desert-compass-controls" class="transport-group" hidden>
+              <button type="button" id="btn-compass-left" class="hud-btn">Rotate West ↺</button>
+              <button type="button" id="btn-compass-align" class="hud-btn hud-btn-gold">Align North Star</button>
+              <button type="button" id="btn-compass-right" class="hud-btn">Rotate East ↻</button>
+            </div>
+          </div>
+
+          <div class="transport-bar">
+            <div class="transport-group">
+              <button type="button" id="btn-prev-biome" class="hud-btn">Prev</button>
+              <button type="button" id="btn-next-biome" class="hud-btn">Next</button>
+              <button type="button" id="btn-biome-action" class="hud-btn hud-btn-cta" aria-pressed="false">
+                Reveal Magnetic Shield
+              </button>
+              <button type="button" id="btn-reflect-toggle" class="hud-btn hud-btn-gold" aria-pressed="false">
+                Reflect &amp; Science
+              </button>
+            </div>
+
+            <div class="transport-group">
+              <div class="narration-btn-wrap">
+                <div id="hud-voice-wave" class="voice-wave" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <button type="button" id="btn-narrate-toggle" class="hud-btn">Narrate</button>
+              </div>
+              <button type="button" id="btn-stillness-toggle" class="hud-btn hud-btn-gold" aria-pressed="false" title="Enter Slow-Motion Deep Stillness Sanctuary (S)">
+                Stillness
+              </button>
+              <button type="button" id="btn-audio-toggle" class="hud-btn" aria-pressed="true">
+                Audio On
+              </button>
+              <button type="button" id="btn-more-controls" class="hud-btn" aria-pressed="false">
+                Sky &amp; View ▾
+              </button>
+            </div>
+          </div>
+
+          <!-- Secondary Environment, Sky, Media & Camera Controls Popover -->
+          <div id="more-controls-popover" class="more-controls-popover" hidden>
+            <div class="popover-row" style="margin-bottom: 2px;">
+              <span class="popover-section-title">Environment &amp; Camera</span>
+              <button type="button" id="btn-close-popover" class="inspector-close">Close</button>
+            </div>
+
+            <div class="popover-row">
+              <span>Day / Night Sky</span>
+              <div class="transport-group">
+                <button type="button" id="btn-solar-preset" class="hud-btn" style="padding: 3px 8px;">Daylight</button>
+                <input
+                  type="range"
+                  id="solar-weather-slider"
+                  class="chronos-slider"
+                  min="-0.25"
+                  max="0.85"
+                  step="0.02"
+                  value="-0.14"
+                  aria-label="Solar Elevation"
+                />
+                <span id="solar-weather-readout" class="chronos-readout">Starlight</span>
+              </div>
+            </div>
+
+            <div class="popover-row">
+              <span>Real-World Documentary</span>
+              <button type="button" id="btn-media-toggle" class="hud-btn" aria-pressed="false">
+                Video &amp; Photos
+              </button>
+            </div>
+
+            <div class="popover-row">
+              <span>Luminous Bloom Glow (B)</span>
+              <button type="button" id="btn-bloom-toggle" class="hud-btn is-active" aria-pressed="true">
+                Bloom Glow
+              </button>
+            </div>
+
+            <div class="popover-row">
+              <span>Nature Motion Speed</span>
+              <button type="button" id="btn-timescale-toggle" class="hud-btn" aria-pressed="false">
+                Speed: 1.0x Normal
+              </button>
+            </div>
+
+            <div class="popover-row">
+              <span>Camera Vantage</span>
+              <div class="transport-group">
+                <button type="button" id="btn-vantage-aerial" class="hud-btn" style="padding: 3px 8px;">Aerial</button>
+                <button type="button" id="zoom-scale-readout" class="hud-btn is-active" aria-pressed="true" style="padding: 3px 8px;">Eye Level</button>
+                <button type="button" id="btn-vantage-closeup" class="hud-btn" style="padding: 3px 8px;">Close-Up</button>
+              </div>
+            </div>
+
+            <div class="popover-row">
+              <span>Arrow Keys &amp; Zoom (+/−)</span>
+              <div class="transport-group">
+                <button type="button" id="btn-arrow-mode" class="hud-btn" style="padding: 3px 8px;">Arrows: Rotate</button>
+                <button type="button" id="btn-zoom-out" class="hud-btn" style="padding: 3px 9px;">−</button>
+                <button type="button" id="btn-zoom-in" class="hud-btn" style="padding: 3px 9px;">+</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <a-scene
+      webxr="requiredFeatures: local-floor; optionalFeatures: hand-tracking, hit-test, bounded-floor;"
+      xr-mode-ui="enabled: false"
+      renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true; alpha: true;"
+      cursor="rayOrigin: mouse; fuse: false"
+      raycaster="objects: .interactive-node, .vr-interactive"
+      object-manipulator
+      gesture-scale-manager
+      wow-mechanics-manager
+      scientific-telemetry
+      wonder-ripple-system
+      tactile-touch-fx
+      wow-postprocessing="enabled: true; strength: 1.25; radius: 0.65; threshold: 0.72"
+    >
+      <a-entity
+        id="biome-sky-dome"
+        atmospheric-sky-dome="solarElevation: -0.14; underwater: false; tintColor: #34D399"
+      ></a-entity>
+
+      <a-entity light="type: ambient; color: #FFFDF0; intensity: 0.85"></a-entity>
+      <a-entity light="type: directional; color: #FFFBEB; intensity: 1.45" position="4 8 3"></a-entity>
+      <a-entity light="type: point; color: #FDE68A; intensity: 0.80; distance: 25" position="0 3.2 -2.5"></a-entity>
+
+      <a-entity id="rig" position="0 0 0" zoom-lod-controller vr-spatial-console>
+        <a-camera
+          position="0 1.6 0"
+          wasd-controls="acceleration: 18"
+          look-controls="pointerLockEnabled: false"
+          nature-audio-listener
+        ></a-camera>
+
+        <a-entity
+          id="left-hand"
+          hand-tracking-controls="hand: left; modelStyle: mesh; modelColor: #34D399"
+          biome-hand-controls
+        ></a-entity>
+
+        <a-entity
+          id="right-hand"
+          hand-tracking-controls="hand: right; modelStyle: mesh; modelColor: #FBBF24"
+          biome-hand-controls
+        ></a-entity>
+
+        <a-entity
+          id="left-controller"
+          laser-controls="hand: left; model: true"
+          raycaster="objects: .interactive-node, .vr-interactive; far: 8"
+          vr-controller-shortcuts
+        ></a-entity>
+
+        <a-entity
+          id="right-controller"
+          laser-controls="hand: right; model: true"
+          raycaster="objects: .interactive-node, .vr-interactive; far: 8"
+          vr-controller-shortcuts
+        ></a-entity>
+      </a-entity>
+
+      <a-entity id="stillness-mandala-group" position="0 3.05 -4.6" rotation="20 0 0" visible="false">
+        <a-entity islamic-star-mandala="folds: 16"></a-entity>
+        <a-entity position="0 0 -0.18" cymatic-visualizer="width: 3.4; height: 3.4; segments: 42"></a-entity>
+      </a-entity>
+
+      <a-entity
+        id="mr-diorama-ring"
+        portal-window-shader="color: #38BDF8"
+        position="0 0.86 -1.05"
+        rotation="90 0 0"
+        scale="0.355 0.355 0.355"
+        visible="false"
+      ></a-entity>
+
+      <a-entity id="biome-container"></a-entity>
+    </a-scene>
+
+    <script type="module" src="./js/state/biome-manager.js"></script>
+  </body>
+</html>
