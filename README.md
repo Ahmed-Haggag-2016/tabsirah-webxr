@@ -48,13 +48,17 @@ Reaching out with Meta Quest Hand Tracking, pinching an interactive node, or cli
 - **Bare-Hand Tracking:** Direct fingertip contact on beacons and the waist-height **3D Spatial VR/MR Console**, pinch-to-activate nodes, **Two-Hand Spread Zoom** across Macro-to-Micro lenses, left-hand pinch horizontal scrub for Day/Night solar elevation, sky sweeps in Aurora, and upward palm raises in Rainforest.
 - **Touch Controllers:** Laser pointer selection, thumbstick X-axis solar scrubbing, thumbstick Y-axis zoom, `A`/`X` Day/Night toggle, and `B`/`Y` biome cycling.
 
-### 4. Mixed Reality (MR) Passthrough Diorama
-One tap on **MR Passthrough** dissolves the virtual sky dome and renders the active living biome as a clipped, circular `0.85 m` holographic tabletop diorama floating in your physical room.
+### 4. Mixed Reality Hit-Test Anchoring & Tabletop Portal (`T` Key)
+- **WebXR Hit-Test Surface Anchoring:** In Meta Quest Passthrough (`immersive-ar`), a 16-fold geometric landing reticle tracks real tables and floors so you can pinch or trigger to lock the holographic biome diorama onto your actual desk.
+- **Desktop Tabletop Portal Showcase (`T` Key):** Frame any biome inside a floating brushed-gold and GLSL **Dimensional Astrolabe Portal Arch** right inside desktop Chrome or a WebXR Emulator—ideal for spatial overview and crisp demo capture.
 
-### 5. Autonomous Cinematic Mode, Stillness Sanctuary & Real-World Media
-- **Cinematic Mode:** Guided autopilot smoothly sweeps camera vantage, solar elevation, discovery beacons, field photography, scientific context, and spoken narration across all four biomes.
-- **Stillness Sanctuary (`S` key):** Slows motion to `0.42x`, summons a **16-fold Islamic Geometric Star Mandala** + **3D Cymatic Visualizer** overhead, and runs a 14-second contemplative breath pacer (`4s inhale · 4s hold · 6s exhale`).
-- **Real-World Documentary Drawer:** Pairs each procedural simulation with real-world coordinates, Wikimedia Commons field photography, and embedded documentary video.
+### 5. Ecological Relic Constellation & Cosmic Convergence (`G` Key)
+Activating discovery across the four biomes crystallizes four procedural 3D **Ecological Relics** in an orbital overhead halo. Attuning all four unlocks (or toggles via `G`) the **Cosmic Convergence Finale**—uniting every relic, the **16-Fold Islamic Star Mandala**, cymatic waves, and a layered harmonic chord.
+
+### 6. Stillness Sanctuary (`S`), Live Mic Breath & Wonder Brush (`W`)
+- **Live Mic Breath Resonance:** Inside Stillness Sanctuary (`S`), enable **Mic Breath** to expand the 16-fold Star Mandala and swell singing-bowl harmonics with your real breath (blending smoothly with the 14s inhale/hold/exhale pacer).
+- **Diegetic 3D Onboarding Cues:** Minimal floating 3D target rings and gesture comet arcs guide your first interaction automatically and fade cleanly once touched.
+- **Stardust Wonder Brush (`W` / `Shift + Drag` / XR Pinch):** Paint glowing, zero-GC calligraphic stardust trails pitched to the active biome's musical scale.
 
 ---
 
@@ -94,6 +98,7 @@ One tap on **MR Passthrough** dissolves the virtual sky dome and renders the act
         ├── scientific-telemetry.js   # Real-time WebXR haptic actuator bridge
         ├── wow-mechanics.js          # Autonomous Cinematic Director autopilot
         ├── wow-postprocessing.js     # Selective luminous bloom post-processing
+        ├── grand-prize-features.js   # Hit-test portal, Relic Convergence, Diegetic cues, Mic Breath & Wonder Brush
         └── ...                       # Particle weather, cymatics, spatial discovery & PBR utils
 ```
 
@@ -154,7 +159,10 @@ Choose one of the following methods to test in headset:
 | `1` – `4` | Switch biome (`1`: Polar Aurora, `2`: Living Rainforest, `3`: Coral Cathedral, `4`: Desert Oasis) |
 | `Space` / `Shift + Space` | Advance to next biome / previous biome |
 | `E` or `Enter` | Trigger primary biome revelation (Magnetic Shield, Summon Rain, Reef Surge, Aquifer) |
-| `S` | Toggle **Stillness Sanctuary** (16-fold star mandala, cymatics & 14s breath pacer) |
+| `T` | Toggle **Tabletop Portal** holographic pedestal diorama showcase |
+| `G` | Toggle 4-Biome **Cosmic Convergence** finale |
+| `W` or `Shift + Drag` | Toggle **Wonder Brush** calligraphic stardust trails pitched to biome scale |
+| `S` | Toggle **Stillness Sanctuary** (16-fold star mandala, cymatics & optional **Mic Breath**) |
 | `+` / `=` or `PageUp` | Zoom **In** toward Macro-to-Micro living lenses |
 | `-` / `_` or `PageDown` | Zoom **Out** toward Aerial panorama |
 | `Arrow Keys` | Rotate camera (`Shift + Up/Down` zooms; press `Z` to toggle Arrow Rotate/Zoom mode) |

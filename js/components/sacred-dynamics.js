@@ -930,13 +930,10 @@ if (typeof AFRAME !== 'undefined') {
         const dt = (Math.min(timeDelta, 50) / 1000) * scale;
         this.elapsed += dt;
 
-        let audioLevel = 0.08;
-        if (natureAudio?.analyser && natureAudio.isInitialized) {
-          natureAudio.analyser.getByteFrequencyData(this.freqData);
-          let sum = 0;
-          for (let i = 0; i < 16; i++) sum += this.freqData[i];
-          audioLevel = (sum / 16) / 255.0;
-        }
+        const bands = natureAudio?.sampleCymaticBands
+          ? natureAudio.sampleCymaticBands()
+          : { overall: 0.08, bass: 0.06 };
+        const audioLevel = 0.06 + bands.overall * 0.94;
 
         const targetBreath = typeof window.tabsirahBreathPhase === 'number' ? window.tabsirahBreathPhase : 0.3;
         this.breathSmooth = THREE.MathUtils.damp(this.breathSmooth, targetBreath, 4.5, dt);

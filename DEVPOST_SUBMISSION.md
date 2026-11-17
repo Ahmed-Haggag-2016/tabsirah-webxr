@@ -20,7 +20,7 @@
 | **Track** | **Entertainment** |
 | **Division** | **New Experience** *(or Adapted if an earlier build shipped before Sept 24, 2026)* |
 | **Build Path / SDK** | **Immersive Web (WebXR · A-Frame 1.5.0 · Three.js · Custom GLSL · Web Audio API)** |
-| **Horizon OS Capabilities** | `Hand Tracking (Hands-First)`, `Mixed Reality Passthrough (immersive-ar)`, `Spatial Audio`, `Controller Haptics` |
+| **Horizon OS Capabilities** | `Hand Tracking (Hands-First)`, `Mixed Reality Passthrough & Hit-Test Anchoring (immersive-ar)`, `Spatial Audio`, `Controller Haptics` |
 | **Live WebXR Demo URL** | *Insert your stable HTTPS URL (keep active through December 11, 2026 winner announcement)* |
 | **Demo Video URL** | *Insert public YouTube or Vimeo link (< 3 minutes — see Section 4 storyboard)* |
 | **Repository URL** | *Insert public GitHub repository URL* |
@@ -39,7 +39,7 @@ Tabṣirah places you inside four scientifically grounded environments connected
 3. **Coral Cathedral (`ocean`):** Refractive wave caustics (`1.333` seawater IOR), decentralized Boids fish schooling, gliding manta rays, and touch-restorative corals alongside live **Gray-Scott Reaction-Diffusion** and **Geodesic Voronoi** lenses.
 4. **Desert Oasis (`desert`):** Wind-carved aeolian dunes, Rayleigh/Mie solar scattering from High Sun to Starlight, a subterranean **Artesian Aquifer** reveal, and an interactive **Polaris Star Compass**.
 
-At any moment, toggle **MR Passthrough** to shrink the biome into a clipped `0.85 m` circular hologram on your living-room table, engage **Cinematic Mode** for an autonomous narrated tour, or open the **Stillness Sanctuary (`S`)** with a breathing **16-fold Islamic Geometric Star Mandala** and 3D cymatic visualizer.
+At any moment, toggle **MR Passthrough** (with real WebXR `hit-test` tabletop anchoring) or **Tabletop Portal (`T`)** to inspect the biome inside an astrolabe pedestal diorama, paint musical stardust ribbons with **Wonder Brush (`W`)**, breathe live into the **Stillness Sanctuary (`S`)** with **Mic Breath**, or unite all four biome relics in the **Cosmic Convergence (`G`)** finale.
 
 ### How We Built It
 We engineered a **0 KB external asset pipeline** in WebXR (`A-Frame 1.5.0` + `Three.js`):
@@ -59,9 +59,9 @@ We plan to publish a packaged Horizon OS Progressive Web App / competition relea
 
 | Judging Criterion (25% Each) | How Tabṣirah Delivers |
 | :--- | :--- |
-| **1. Innovation & Creativity** | Replaces static skyboxes and multi-gigabyte downloads with a **0 KB procedural universe** combining scientific simulations (Rayleigh scattering, Snell dispersion, Gray-Scott PDEs, Boids) with tactile 16-fold geometric shaders and Mixed Reality tabletop dioramas. |
-| **2. Experience Design** | Zero-friction **hands-first** onboarding works immediately while **seated or standing**: reach out to touch beacons, sweep the aurora sky, raise palms for rain, or tap the waist-height 3D console without text walls or complex menus. |
-| **3. Technical Implementation** | Custom WebGL/GLSL shaders, procedural Web Audio synthesis, zero-GC `tick()` loops targeting **60+ FPS on Meta Quest 3 / 3S**, full `immersive-vr` and `immersive-ar` passthrough clipping planes, and haptic actuator feedback. |
+| **1. Innovation & Creativity** | Replaces static skyboxes and multi-gigabyte downloads with a **0 KB procedural universe** combining scientific simulations (Rayleigh scattering, Snell dispersion, Gray-Scott PDEs, Boids), an unlockable **4-Biome Relic Convergence**, live **Mic Breath** cymatics, musical stardust trails, and **Hit-Test Tabletop Portals**. |
+| **2. Experience Design** | Zero-friction **hands-first** onboarding with **diegetic 3D gesture comet arcs** and pulsing target rings that fade automatically after your first touch—working smoothly **seated or standing** with zero text walls. |
+| **3. Technical Implementation** | Custom WebGL/GLSL shaders, Web Audio `AnalyserNode` breath envelopes, `XRHitTestSource` real-surface anchoring, zero-GC pooled GPU buffers targeting **60+ FPS on Meta Quest 3 / 3S**, and haptic actuator pulses. |
 | **4. Polish & Presentation** | Cohesive sky-emerald-gold visual palette, smooth 420 ms biome transitions, progressive 4-stage UI disclosure, spoken voice narration, real-world documentary photos/video verification, and an autonomous **Cinematic Mode**. |
 
 ---
@@ -81,8 +81,8 @@ We plan to publish a packaged Horizon OS Progressive Web App / competition relea
   Descend beneath sunlit caustics as Boids reef fish swim past a gliding manta ray. Touch pale coral nodes to restore reef luminescence and inspect the live Gray-Scott reaction-diffusion sphere and Geodesic Voronoi lens.
 - **2:05 – 2:30 | Desert Oasis, Twilight Scattering & Polaris Alignment:**  
   Scrub the 3D Solar slider from Golden Hour to Starlight. Reveal the subterranean **Artesian Aquifer** feeding oasis palms and rotate the Star Compass to align Polaris North.
-- **2:30 – 2:45 | Stillness Sanctuary & Closing:**  
-  Press **Stillness (`S`)** to reveal the 16-fold Islamic geometric star mandala pulsing overhead with the 14-second breath pacer and live URL/repo title card.
+- **2:28 – 2:50 | Stillness Sanctuary, Live Mic Breath & 4-Biome Convergence Finale:**  
+  Press **Stillness (`S`)** and trigger **Mic Breath** to show the 16-fold Islamic Star Mandala expanding to live breath, then tap **Convergence (`G`)** to ignite all four Ecological Relics in a unified golden halo with title card & repository URL.
 
 ---
 
@@ -99,10 +99,16 @@ We plan to publish a packaged Horizon OS Progressive Web App / competition relea
    - **Rainforest Palm Raise:** Lift your hand overhead (`> 1.65 m`) to summon warm rain, then zoom in (`+` on console) to tilt the Water-Droplet Optical Prism.
    - **Left-Hand Solar Scrub:** Pinch with your left hand and sweep horizontally to transition smoothly between Starlight and Daylight.
 
-### B. Testing on Desktop (Chrome / Edge / Firefox)
+### B. Testing on Desktop & WebXR Emulator (Chrome / Edge / Firefox)
 1. Run `npm install && npm run dev` and open `http://localhost:3000` (or open the live HTTPS URL).
 2. Click **Begin Exploration** (or **Start Cinematic Tour** for hands-off autopilot).
-3. Use `1`–`4` or `Space` to switch biomes, `E` to trigger each biome's primary revelation, `S` for Stillness Sanctuary, `+`/`-` to zoom into micro-lenses, `[`/`]` to scrub Day/Night solar elevation, and click anywhere in 3D to trigger tactile touch shockwaves.
+3. **Key Showcase Controls:**
+   - `1`–`4` or `Space`: Switch biomes and watch the **Diegetic 3D Gesture Arcs** guide each scene.
+   - `E` or click a 3D beacon: Trigger biome revelation and attune its **Ecological Relic (`1/4` → `4/4`)**.
+   - `T`: Toggle **Tabletop Portal** astrolabe pedestal diorama showcase.
+   - `W` (or `Shift + Drag`): Paint musical **Wonder Brush** stardust trails across 3D space.
+   - `G`: Launch the **Cosmic Convergence** 4-biome relic finale.
+   - `S`: Enter **Stillness Sanctuary** and test **Mic Breath** responsiveness.
 
 ---
 

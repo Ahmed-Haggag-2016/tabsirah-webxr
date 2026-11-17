@@ -31,6 +31,8 @@ class NatureAudioEngine {
     this.padFilter = null;
     this.padGain = null;
     this.padLfo = null;
+    this._fftBins = new Uint8Array(128);
+    this._cymaticOut = { bass: 0, mid: 0, high: 0, overall: 0, peak: 0 };
 
     this.profiles = {
       aurora: {
@@ -110,7 +112,8 @@ class NatureAudioEngine {
       this.masterGain.gain.value = this.isMuted ? 0 : 0.88;
 
       this.analyser = this.ctx.createAnalyser();
-      this.analyser.fftSize = 128;
+      this.analyser.fftSize = 256;
+      this.analyser.smoothingTimeConstant = 0.78;
       this.masterGain.connect(this.analyser);
       this.analyser.connect(this.ctx.destination);
 
@@ -572,6 +575,48 @@ class NatureAudioEngine {
     }
   }
 
+  /**
+   * Plays a harmonic note along the active biome's musical scale (for Wonder Brush trails)
+   */
+  playWonderScaleNote(biomeId = 'aurora', pitchNorm = 0.5, spatialPos = null) {
+    this.unlock();
+    if (this.isMuted || !this.isInitialized || !this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+    const profile = this.profiles[biomeId] || this.profiles.aurora;
+    const scale = profile.scale || [293.66, 392.0, 440.0, 523.25, 659.25];
+    const clamped = Math.max(0, Math.min(0.999, pitchNorm));
+    const idx = Math.floor(clamped * scale.length);
+    const freq = scale[idx];
+    this.playTone(freq, 0.42, 'sine', 0.024, 0, spatialPos);
+    this.playTone(freq * 1.5, 0.34, 'triangle', 0.009, 0.025, spatialPos);
+  }
+
+  /**
+   * Plays the grand polyphonic 4-biome convergence chord
+   */
+  playConvergenceChord() {
+    this.unlock();
+    if (this.isMuted || !this.isInitialized || !this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+    const notes = [146.83, 220.0, 293.66, 369.99, 440.0, 587.33, 659.25, 880.0];
+    notes.forEach((freq, i) => {
+      this.playTone(freq, 1.65 + i * 0.15, i % 2 === 0 ? 'sine' : 'triangle', 0.026, i * 0.075);
+    });
+  }
+
+  /**
+   * Modulates ambient harmonic pad brightness & swell from real-time mic breath energy
+   */
+  setBreathHarmonicBoost(level = 0) {
+    if (!this.isInitialized || !this.ctx || !this.padGain || !this.padFilter) return;
+    const now = this.ctx.currentTime;
+    const baseGain = this.isStillness ? 0.048 : 0.018;
+    const baseFreq = this.isStillness ? 840 : 620;
+    const clamped = Math.max(0, Math.min(1, level));
+    this.padGain.gain.setTargetAtTime(baseGain + clamped * 0.055, now, 0.12);
+    this.padFilter.frequency.setTargetAtTime(baseFreq + clamped * 680, now, 0.12);
+  }
+
   updateListener(pos, forward, up) {
     if (!this.isInitialized || !this.ctx || !this.ctx.listener) return;
     const L = this.ctx.listener;
@@ -586,6 +631,66 @@ class NatureAudioEngine {
       L.upY.value = up.y;
       L.upZ.value = up.z;
     }
+  }
+
+  sampleCymaticBands() {
+    const out = this._cymaticOut;
+    let bass = 0;
+    let mid = 0;
+    let high = 0;
+    let peak = 0;
+
+    if (this.isInitialized && this.analyser && !this.isMuted && this._fftBins) {
+      this.analyser.getByteFrequencyData(this._fftBins);
+      const len = Math.min(this.analyser.frequencyBinCount || 64, this._fftBins.length);
+
+      let bSum = 0;
+      let bCnt = 0;
+      let mSum = 0;
+      let mCnt = 0;
+      let hSum = 0;
+      let hCnt = 0;
+
+      for (let i = 1; i < len; i++) {
+        const v = this._fftBins[i] / 255.0;
+        if (v > peak) peak = v;
+        if (i <= 7) {
+          bSum += v;
+          bCnt++;
+        } else if (i <= 24) {
+          mSum += v;
+          mCnt++;
+        } else if (i <= 56) {
+          hSum += v;
+          hCnt++;
+        }
+      }
+
+      bass = bCnt > 0 ? Math.min(1, (bSum / bCnt) * 1.45) : 0;
+      mid = mCnt > 0 ? Math.min(1, (mSum / mCnt) * 1.65) : 0;
+      high = hCnt > 0 ? Math.min(1, (hSum / hCnt) * 2.0) : 0;
+    }
+
+    const micLvl =
+      typeof window !== 'undefined' && typeof window.tabsirahMicBreathLevel === 'number'
+        ? window.tabsirahMicBreathLevel
+        : 0;
+    if (micLvl > 0.01) {
+      bass = Math.min(1, Math.max(bass, micLvl * 0.92));
+      mid = Math.min(1, Math.max(mid, micLvl * 0.65));
+    }
+
+    if (typeof window !== 'undefined' && window.speechSynthesis?.speaking && mid < 0.25) {
+      mid = Math.max(mid, 0.34);
+    }
+
+    const overall = Math.min(1, bass * 0.44 + mid * 0.34 + high * 0.22);
+    out.bass = bass;
+    out.mid = mid;
+    out.high = high;
+    out.overall = overall;
+    out.peak = Math.max(peak, micLvl);
+    return out;
   }
 }
 

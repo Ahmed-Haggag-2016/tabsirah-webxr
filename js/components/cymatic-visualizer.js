@@ -30,7 +30,7 @@ if (typeof AFRAME !== 'undefined') {
           metalness: 0.2,
           wireframe: true,
           transparent: true,
-          opacity: 0.24,
+          opacity: 0.26,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
           side: THREE.DoubleSide
@@ -39,14 +39,19 @@ if (typeof AFRAME !== 'undefined') {
         this.mesh = new THREE.Mesh(this.geo, this.mat);
         this.el.setObject3D('mesh', this.mesh);
         this.elapsed = 0;
+        this.smoothOverall = 0.14;
+        this.smoothBass = 0.12;
+        this.smoothMid = 0.12;
+        this.smoothHigh = 0.1;
+        this._baseColor = new THREE.Color('#0EA5E9');
+        this._warmColor = new THREE.Color('#FBBF24');
+
         this.posAttr = this.geo.attributes.position;
         this.baseHeights = new Float32Array(this.posAttr.count);
 
         for (let i = 0; i < this.posAttr.count; i++) {
           this.baseHeights[i] = this.posAttr.getY(i);
         }
-
-        this.freqData = new Uint8Array(64);
       },
 
       tick: function (time, timeDelta) {
@@ -55,30 +60,47 @@ if (typeof AFRAME !== 'undefined') {
         const dt = (Math.min(timeDelta, 50) / 1000) * scale;
         this.elapsed += dt;
 
-        // Fetch frequency data from natureAudio if initialized
-        let avgFreq = 0.15;
-        if (natureAudio && natureAudio.analyser && natureAudio.isInitialized) {
-          natureAudio.analyser.getByteFrequencyData(this.freqData);
-          let sum = 0;
-          for (let i = 0; i < 16; i++) sum += this.freqData[i];
-          avgFreq = (sum / 16) / 255.0;
-        } else if (window.speechSynthesis && window.speechSynthesis.speaking) {
-          avgFreq = 0.65;
-        }
+        const bands = natureAudio?.sampleCymaticBands
+          ? natureAudio.sampleCymaticBands()
+          : { bass: 0.12, mid: 0.12, high: 0.1, overall: 0.14 };
+
+        this.smoothBass = THREE.MathUtils.damp(this.smoothBass, bands.bass, 6.0, dt);
+        this.smoothMid = THREE.MathUtils.damp(this.smoothMid, bands.mid, 6.5, dt);
+        this.smoothHigh = THREE.MathUtils.damp(this.smoothHigh, bands.high, 7.5, dt);
+        this.smoothOverall = THREE.MathUtils.damp(this.smoothOverall, bands.overall, 5.5, dt);
 
         const t = this.elapsed;
         const count = this.posAttr.count;
+        const halfW = Math.max(0.5, this.data.width * 0.5);
+        const bassWeight = 0.03 + this.smoothBass * 0.24;
+        const midWeight = 0.02 + this.smoothMid * 0.18;
+        const highWeight = 0.01 + this.smoothHigh * 0.11;
+
         for (let i = 0; i < count; i++) {
           const x = this.posAttr.getX(i);
           const z = this.posAttr.getZ(i);
+          const nx = (x / halfW) * Math.PI;
+          const nz = (z / halfW) * Math.PI;
           const r = Math.hypot(x, z);
-          const standingWave = Math.sin(r * 4.5 - t * 3.5) * Math.cos(x * 3.2 + t * 2.1);
-          const amp = (0.04 + avgFreq * 0.34) * Math.max(0, 1.0 - r * 0.35);
-          const newY = this.baseHeights[i] + standingWave * amp;
+          const radialMask = Math.max(0, 1.0 - r / (halfW * 1.08));
+
+          const radial = Math.sin(r * 4.2 - t * 3.1) * bassWeight;
+          const chladniMid =
+            (Math.cos(3.0 * nx + t * 0.4) * Math.cos(5.0 * nz) -
+              Math.cos(5.0 * nx) * Math.cos(3.0 * nz - t * 0.4)) *
+            midWeight;
+          const chladniHigh =
+            Math.sin(6.0 * nx - t * 1.4) * Math.cos(8.0 * nz + t * 1.1) * highWeight;
+
+          const newY = this.baseHeights[i] + (radial + chladniMid + chladniHigh) * radialMask;
           this.posAttr.setY(i, newY);
         }
         this.posAttr.needsUpdate = true;
-        this.geo.computeVertexNormals();
+
+        this.mat.emissiveIntensity = 0.55 + this.smoothOverall * 1.45;
+        this.mat.opacity = Math.min(0.68, 0.20 + this.smoothOverall * 0.44);
+        const warmMix = THREE.MathUtils.clamp(this.smoothBass * 1.35 - this.smoothHigh * 0.45, 0, 1);
+        this.mat.emissive.copy(this._baseColor).lerp(this._warmColor, warmMix);
       },
 
       remove: function () {

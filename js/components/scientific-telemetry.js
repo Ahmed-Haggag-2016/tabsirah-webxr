@@ -5,6 +5,8 @@
  *  - Provides Meta VR controller haptic pulses on hand pinch and button interactions.
  */
 
+import { triggerWebXRHapticPulse } from './webxr-beacon-haptics.js';
+
 if (typeof AFRAME !== 'undefined') {
   if (!AFRAME.components['scientific-telemetry']) {
     AFRAME.registerComponent('scientific-telemetry', {
@@ -17,44 +19,15 @@ if (typeof AFRAME !== 'undefined') {
         this.onHapticPulse = (e) => {
           const intensity = e.detail?.intensity || 0.4;
           const duration = e.detail?.duration || 40;
-          this.pulseControllers(intensity, duration);
+          const hand = e.detail?.hand || 'both';
+          this.pulseControllers(intensity, duration, hand);
         };
         window.addEventListener('trigger-haptic', this.onHapticPulse);
       },
 
-      pulseControllers: function (intensity = 0.4, duration = 40) {
+      pulseControllers: function (intensity = 0.4, duration = 40, hand = 'both') {
         const sceneEl = this.el.sceneEl;
-        if (!sceneEl || (!sceneEl.is('vr-mode') && !sceneEl.is('ar-mode'))) return;
-        const clampedIntensity = Math.max(0, Math.min(1, intensity));
-        const clampedDuration = Math.max(10, Math.min(250, duration));
-
-        const pulseGamepad = (gp) => {
-          if (!gp) return;
-          if (gp.hapticActuators && gp.hapticActuators[0]?.pulse) {
-            gp.hapticActuators[0].pulse(clampedIntensity, clampedDuration).catch(() => {});
-          } else if (gp.vibrationActuator?.playEffect) {
-            gp.vibrationActuator.playEffect('dual-rumble', {
-              startDelay: 0,
-              duration: clampedDuration,
-              weakMagnitude: clampedIntensity * 0.7,
-              strongMagnitude: clampedIntensity
-            }).catch(() => {});
-          }
-        };
-
-        const session = sceneEl.renderer?.xr?.getSession?.();
-        if (session?.inputSources) {
-          for (const source of session.inputSources) {
-            pulseGamepad(source.gamepad);
-          }
-        }
-
-        if (typeof navigator.getGamepads === 'function') {
-          const gps = navigator.getGamepads();
-          for (const gp of gps) {
-            pulseGamepad(gp);
-          }
-        }
+        triggerWebXRHapticPulse(sceneEl, hand, intensity, duration);
       },
 
       tick: function (time, timeDelta) {

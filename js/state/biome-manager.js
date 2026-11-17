@@ -17,13 +17,14 @@ import '../components/vr-spatial-console.js';
 import '../components/object-manipulator.js';
 import '../components/gesture-scale-manager.js';
 import '../components/wow-mechanics.js';
-import '../components/cymatic-visualizer.js';
 import '../components/scientific-telemetry.js';
 import '../components/wow-postprocessing.js';
 import '../components/spatial-discovery.js';
 import '../components/light-optics.js';
 import '../components/sacred-dynamics.js';
 import '../components/tactile-touch-fx.js';
+import '../components/webxr-beacon-haptics.js';
+import { micBreathMonitor } from '../components/grand-prize-features.js';
 
 if (typeof window !== 'undefined') {
   if (typeof window.tabsirahTimeScale !== 'number') window.tabsirahTimeScale = 1.0;
@@ -293,7 +294,6 @@ class BiomeManager {
     this.mediaCoordsEl = document.getElementById('media-coords');
 
     // Innovation 1, 2 & 3 Elements
-    this.stillnessMandalaEl = document.getElementById('stillness-mandala-group');
     this.mrDioramaRingEl = document.getElementById('mr-diorama-ring');
     this.wonderContextBar = document.getElementById('wonder-context-bar');
     this.wonderContextLabel = document.getElementById('wonder-context-label');
@@ -301,6 +301,13 @@ class BiomeManager {
     this.compassLeftBtn = document.getElementById('btn-compass-left');
     this.compassAlignBtn = document.getElementById('btn-compass-align');
     this.compassRightBtn = document.getElementById('btn-compass-right');
+
+    // Grand Prize Feature Controls
+    this.micBreathBtn = document.getElementById('btn-mic-breath');
+    this.tabletopBtn = document.getElementById('btn-tabletop-toggle');
+    this.convergenceBtn = document.getElementById('btn-convergence-toggle');
+    this.wonderBrushBtn = document.getElementById('btn-wonder-brush');
+    this.relicProgressText = document.getElementById('relic-progress-text');
   }
 
   bindEvents() {
@@ -432,6 +439,70 @@ class BiomeManager {
     this.stillnessNextBtn?.addEventListener('click', () => {
       natureAudio.unlock();
       this.stepBiome(1);
+    });
+
+    // Grand Prize Feature Controls: Mic Breath, Tabletop Portal, Convergence, Wonder Brush
+    this.micBreathBtn?.addEventListener('click', async () => {
+      natureAudio.unlock();
+      await micBreathMonitor.toggle();
+    });
+
+    window.addEventListener('tabsirah-mic-breath-state', (evt) => {
+      const { active, error } = evt.detail || {};
+      if (this.micBreathBtn) {
+        this.micBreathBtn.setAttribute('aria-pressed', String(Boolean(active)));
+        this.micBreathBtn.classList.toggle('is-active', Boolean(active));
+        this.micBreathBtn.textContent = active ? 'Mic Breath: Live' : (error ? 'Mic Unavailable' : 'Mic Breath');
+      }
+    });
+
+    this.tabletopBtn?.addEventListener('click', () => {
+      natureAudio.unlock();
+      window.dispatchEvent(new CustomEvent('tabsirah-tabletop-toggle'));
+    });
+
+    window.addEventListener('tabsirah-tabletop-state', (evt) => {
+      const active = Boolean(evt.detail?.active);
+      if (this.tabletopBtn) {
+        this.tabletopBtn.setAttribute('aria-pressed', String(active));
+        this.tabletopBtn.classList.toggle('is-active', active);
+        this.tabletopBtn.textContent = active ? 'Exit Tabletop (T)' : 'Tabletop (T)';
+      }
+    });
+
+    this.convergenceBtn?.addEventListener('click', () => {
+      natureAudio.unlock();
+      window.dispatchEvent(new CustomEvent('tabsirah-convergence-toggle'));
+    });
+
+    window.addEventListener('tabsirah-relics-updated', (evt) => {
+      const { count = 0, total = 4, allUnlocked = false, convergenceActive = false } = evt.detail || {};
+      if (this.relicProgressText) {
+        this.relicProgressText.textContent = allUnlocked
+          ? `${count} / ${total} Attuned (Unlocked)`
+          : `${count} / ${total} Attuned`;
+      }
+      if (this.convergenceBtn) {
+        this.convergenceBtn.setAttribute('aria-pressed', String(convergenceActive));
+        this.convergenceBtn.classList.toggle('is-active', convergenceActive);
+        this.convergenceBtn.textContent = convergenceActive
+          ? 'Exit Convergence'
+          : (allUnlocked ? `Convergence (${count}/${total})` : `Convergence (${count}/${total})`);
+      }
+    });
+
+    this.wonderBrushBtn?.addEventListener('click', () => {
+      natureAudio.unlock();
+      window.dispatchEvent(new CustomEvent('tabsirah-wonder-brush-toggle'));
+    });
+
+    window.addEventListener('tabsirah-wonder-brush-state', (evt) => {
+      const active = Boolean(evt.detail?.active);
+      if (this.wonderBrushBtn) {
+        this.wonderBrushBtn.setAttribute('aria-pressed', String(active));
+        this.wonderBrushBtn.classList.toggle('is-active', active);
+        this.wonderBrushBtn.textContent = active ? 'Brush Active (W)' : 'Wonder Brush';
+      }
     });
 
     // Sync local states when triggered from VR or external events
@@ -783,6 +854,21 @@ class BiomeManager {
         this.toggleArrowControlMode();
       } else if (e.key === 'b' || e.key === 'B') {
         window.dispatchEvent(new CustomEvent('toggle-wow-bloom'));
+      } else if (e.key === 't' || e.key === 'T') {
+        if (this.openingOverlay && !this.openingOverlay.hidden) return;
+        e.preventDefault();
+        natureAudio.unlock();
+        window.dispatchEvent(new CustomEvent('tabsirah-tabletop-toggle'));
+      } else if (e.key === 'w' || e.key === 'W') {
+        if (this.openingOverlay && !this.openingOverlay.hidden) return;
+        e.preventDefault();
+        natureAudio.unlock();
+        window.dispatchEvent(new CustomEvent('tabsirah-wonder-brush-toggle'));
+      } else if (e.key === 'g' || e.key === 'G') {
+        if (this.openingOverlay && !this.openingOverlay.hidden) return;
+        e.preventDefault();
+        natureAudio.unlock();
+        window.dispatchEvent(new CustomEvent('tabsirah-convergence-toggle'));
       } else if (e.key === 'e' || e.key === 'E' || e.key === 'Enter') {
         if (this.openingOverlay && !this.openingOverlay.hidden) return;
         e.preventDefault();
@@ -822,6 +908,7 @@ class BiomeManager {
       this.sceneEl?.emit('ocean-bubble-surge', {}, false);
       this.syncActionButton();
     }
+    window.dispatchEvent(new CustomEvent('tabsirah-relic-attuned', { detail: { biomeId } }));
   }
 
   updateProgressLabel() {
@@ -834,9 +921,6 @@ class BiomeManager {
     this.isStillness = Boolean(active);
     document.body.classList.toggle('is-stillness', this.isStillness);
     if (this.stillnessVeil) this.stillnessVeil.hidden = !this.isStillness;
-    if (this.stillnessMandalaEl) {
-      this.stillnessMandalaEl.setAttribute('visible', this.isStillness);
-    }
     if (this.stillnessBtn) {
       this.stillnessBtn.setAttribute('aria-pressed', String(this.isStillness));
       this.stillnessBtn.classList.toggle('is-active', this.isStillness);
@@ -853,6 +937,8 @@ class BiomeManager {
       window.dispatchEvent(new CustomEvent('set-wow-bloom', { detail: { strength: 1.56, radius: 0.82 } }));
       this.startBreathPacer();
     } else {
+      if (micBreathMonitor.isActive) micBreathMonitor.stop();
+      natureAudio.setBreathHarmonicBoost(0);
       window.tabsirahBreathPhase = 0.25;
       window.tabsirahTimeScale = this.slowMotionUser ? 0.45 : 1.0;
       natureAudio.setStillnessMode(false);
@@ -867,7 +953,7 @@ class BiomeManager {
   startBreathPacer() {
     if (this.breathAnimFrame) cancelAnimationFrame(this.breathAnimFrame);
     const startTime = performance.now();
-    // 14-second calm contemplative breath cycle: 4s Inhale, 4s Hold, 6s Exhale
+    // 14-second calm contemplative breath cycle: 4s Inhale, 4s Hold, 6s Exhale (blended with live Mic Breath)
     const step = (now) => {
       if (!this.isStillness) return;
       const cycleSec = ((now - startTime) / 1000) % 14;
@@ -876,7 +962,14 @@ class BiomeManager {
       let label = 'Breathe in gently…';
       let ringColor = 'rgba(56, 189, 248, 0.72)';
 
-      if (cycleSec < 4) {
+      if (micBreathMonitor.isActive) {
+        const micLvl = micBreathMonitor.sampleLevel();
+        breathPhase = Math.min(1.0, 0.14 + micLvl * 1.15);
+        scale = 0.84 + breathPhase * 0.66;
+        label = micLvl > 0.16 ? 'Live breath resonance detected…' : 'Exhale softly toward mic…';
+        ringColor = micLvl > 0.16 ? 'rgba(52, 211, 153, 0.88)' : 'rgba(56, 189, 248, 0.76)';
+        natureAudio.setBreathHarmonicBoost(micLvl);
+      } else if (cycleSec < 4) {
         const p = cycleSec / 4;
         const ease = 0.5 - 0.5 * Math.cos(Math.PI * p);
         breathPhase = ease;
@@ -1071,7 +1164,8 @@ class BiomeManager {
   applyBiomeFog(biomeId) {
     const obj = this.sceneEl?.object3D;
     if (!obj) return;
-    if (this.sceneEl?.is('ar-mode')) {
+    const isTabletop = Boolean(this.sceneEl?.components?.['xr-tabletop-portal']?.isTabletopMode);
+    if (this.sceneEl?.is('ar-mode') || isTabletop) {
       obj.fog = null;
       return;
     }
@@ -1261,21 +1355,31 @@ class BiomeManager {
     switch (this.currentBiomeId) {
       case 'aurora':
         this.setAuroraShieldState(!this.auroraShieldActive);
-        if (this.auroraShieldActive && this.uiState === 'explore') this.setUIState('discover');
+        if (this.auroraShieldActive) {
+          window.dispatchEvent(new CustomEvent('tabsirah-relic-attuned', { detail: { biomeId: 'aurora' } }));
+          if (this.uiState === 'explore') this.setUIState('discover');
+        }
         break;
       case 'rainforest':
         this.setRainState(!this.rainActive);
-        if (this.rainActive && this.uiState === 'explore') this.setUIState('discover');
+        if (this.rainActive) {
+          window.dispatchEvent(new CustomEvent('tabsirah-relic-attuned', { detail: { biomeId: 'rainforest' } }));
+          if (this.uiState === 'explore') this.setUIState('discover');
+        }
         break;
       case 'ocean':
         this.oceanEnergized = true;
         this.sceneEl?.emit('ocean-bubble-surge', {}, false);
         this.syncActionButton();
+        window.dispatchEvent(new CustomEvent('tabsirah-relic-attuned', { detail: { biomeId: 'ocean' } }));
         if (this.uiState === 'explore') this.setUIState('discover');
         break;
       case 'desert':
         this.setDesertAquiferState(!this.desertAquiferActive);
-        if (this.desertAquiferActive && this.uiState === 'explore') this.setUIState('discover');
+        if (this.desertAquiferActive) {
+          window.dispatchEvent(new CustomEvent('tabsirah-relic-attuned', { detail: { biomeId: 'desert' } }));
+          if (this.uiState === 'explore') this.setUIState('discover');
+        }
         break;
       default:
         break;
@@ -1340,10 +1444,17 @@ class BiomeManager {
       });
     }
 
+    if (this.mrDioramaRingEl) {
+      this.mrDioramaRingEl.setAttribute('portal-window-shader', 'color', data.accentColor);
+      this.mrDioramaRingEl.setAttribute('portal-occlusion-shader', 'color', data.accentColor);
+    }
+
     const isAR = Boolean(this.sceneEl?.is('ar-mode'));
-    const targetScale = isAR ? 0.155 : 1.0;
+    const isTabletop = Boolean(this.sceneEl?.components?.['xr-tabletop-portal']?.isTabletopMode);
+    const targetScale = isAR ? 0.155 : (isTabletop ? 0.18 : 1.0);
     if (this.container?.object3D) {
       if (isAR) this.container.object3D.position.set(0, 0.88, -1.05);
+      else if (isTabletop) this.container.object3D.position.set(0, 0.88, -1.48);
       else this.container.object3D.position.set(0, 0, 0);
     }
 
@@ -1645,6 +1756,7 @@ class BiomeManager {
     this.sceneEl?.components?.raycaster?.refreshObjects?.();
     document.getElementById('left-controller')?.components?.raycaster?.refreshObjects?.();
     document.getElementById('right-controller')?.components?.raycaster?.refreshObjects?.();
+    window.dispatchEvent(new CustomEvent('tabsirah-biome-changed', { detail: { biomeId } }));
 
     // Sync micro-lens weights if already zoomed in
     requestAnimationFrame(() => {

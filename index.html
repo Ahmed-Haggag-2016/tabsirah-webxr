@@ -1081,6 +1081,7 @@
       <div class="stillness-top-controls">
         <span id="stillness-biome-kicker" class="stillness-biome-kicker">69.65°N · Polar Aurora</span>
         <div class="transport-group">
+          <button type="button" id="btn-mic-breath" class="hud-btn" aria-pressed="false" title="React 3D star mandala & harmonic chimes to live microphone breath">Mic Breath</button>
           <button type="button" id="btn-stillness-next" class="hud-btn">Next Biome</button>
           <button type="button" id="btn-exit-stillness" class="hud-btn hud-btn-gold">Exit Stillness (S)</button>
         </div>
@@ -1329,6 +1330,12 @@
                 </div>
                 <button type="button" id="btn-narrate-toggle" class="hud-btn">Narrate</button>
               </div>
+              <button type="button" id="btn-tabletop-toggle" class="hud-btn" aria-pressed="false" title="Tabletop Portal Diorama View (T)">
+                Tabletop (T)
+              </button>
+              <button type="button" id="btn-convergence-toggle" class="hud-btn hud-btn-gold" aria-pressed="false" title="4-Biome Relic Convergence Finale (G)">
+                Convergence (0/4)
+              </button>
               <button type="button" id="btn-stillness-toggle" class="hud-btn hud-btn-gold" aria-pressed="false" title="Enter Slow-Motion Deep Stillness Sanctuary (S)">
                 Stillness
               </button>
@@ -1397,6 +1404,18 @@
             </div>
 
             <div class="popover-row">
+              <span>Stardust Brush (W / Shift+Drag)</span>
+              <button type="button" id="btn-wonder-brush" class="hud-btn" aria-pressed="false">
+                Wonder Brush
+              </button>
+            </div>
+
+            <div class="popover-row">
+              <span>Ecological Relics</span>
+              <span id="relic-progress-text" style="color: var(--accent-gold); font-weight: 600;">0 / 4 Attuned</span>
+            </div>
+
+            <div class="popover-row">
               <span>Arrow Keys &amp; Zoom (+/−)</span>
               <div class="transport-group">
                 <button type="button" id="btn-arrow-mode" class="hud-btn" style="padding: 3px 8px;">Arrows: Rotate</button>
@@ -1421,6 +1440,10 @@
       scientific-telemetry
       wonder-ripple-system
       tactile-touch-fx
+      xr-tabletop-portal
+      relic-constellation
+      diegetic-onboarding
+      wonder-brush-trails
       wow-postprocessing="enabled: true; strength: 1.25; radius: 0.65; threshold: 0.72"
     >
       <a-entity
@@ -1444,12 +1467,14 @@
           id="left-hand"
           hand-tracking-controls="hand: left; modelStyle: mesh; modelColor: #34D399"
           biome-hand-controls
+          webxr-beacon-haptics="hand: left"
         ></a-entity>
 
         <a-entity
           id="right-hand"
           hand-tracking-controls="hand: right; modelStyle: mesh; modelColor: #FBBF24"
           biome-hand-controls
+          webxr-beacon-haptics="hand: right"
         ></a-entity>
 
         <a-entity
@@ -1457,6 +1482,7 @@
           laser-controls="hand: left; model: true"
           raycaster="objects: .interactive-node, .vr-interactive; far: 8"
           vr-controller-shortcuts
+          webxr-beacon-haptics="hand: left"
         ></a-entity>
 
         <a-entity
@@ -1464,17 +1490,14 @@
           laser-controls="hand: right; model: true"
           raycaster="objects: .interactive-node, .vr-interactive; far: 8"
           vr-controller-shortcuts
+          webxr-beacon-haptics="hand: right"
         ></a-entity>
-      </a-entity>
-
-      <a-entity id="stillness-mandala-group" position="0 3.05 -4.6" rotation="20 0 0" visible="false">
-        <a-entity islamic-star-mandala="folds: 16"></a-entity>
-        <a-entity position="0 0 -0.18" cymatic-visualizer="width: 3.4; height: 3.4; segments: 42"></a-entity>
       </a-entity>
 
       <a-entity
         id="mr-diorama-ring"
         portal-window-shader="color: #38BDF8"
+        portal-occlusion-shader="innerRadius: 1.18; outerRadius: 4.5; wellDepth: 2.2; color: #38BDF8"
         position="0 0.86 -1.05"
         rotation="90 0 0"
         scale="0.355 0.355 0.355"

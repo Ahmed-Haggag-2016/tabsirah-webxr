@@ -10,6 +10,7 @@
 
 import { natureAudio } from './nature-audio.js';
 import { EARTH_BIOMES_DATA } from '../config/earth-biomes-data.js';
+import { micBreathMonitor } from './grand-prize-features.js';
 
 function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
   const words = String(text || '').split(/\s+/);
@@ -237,7 +238,7 @@ if (typeof AFRAME !== 'undefined') {
         this.root.appendChild(this.panel);
 
         // Backing board
-        const boardGeo = new THREE.PlaneGeometry(0.98, 0.42);
+        const boardGeo = new THREE.PlaneGeometry(0.98, 0.50);
         const boardMat = new THREE.MeshBasicMaterial({
           color: '#060D1A',
           transparent: true,
@@ -253,7 +254,7 @@ if (typeof AFRAME !== 'undefined') {
         const rimGeo = new THREE.PlaneGeometry(0.98, 0.006);
         const rimMat = new THREE.MeshBasicMaterial({ color: '#38BDF8', transparent: true, opacity: 0.75 });
         const rimMesh = new THREE.Mesh(rimGeo, rimMat);
-        rimMesh.position.set(0, 0.21, -0.005);
+        rimMesh.position.set(0, 0.25, -0.005);
         this.panel.object3D.add(rimMesh);
         this.disposables.push(rimGeo, rimMat);
 
@@ -284,32 +285,32 @@ if (typeof AFRAME !== 'undefined') {
         };
 
         // ROW 1 (Top): Biome Switcher + Title Banner + Minimize
-        this.btnPrev = createBtn('prev-biome', '‹ Prev', -0.37, 0.145, 0.18, 0.068, { fontSize: 28 });
-        this.titleBanner = createBtn('noop', 'Polar Aurora', -0.04, 0.145, 0.44, 0.068, {
+        this.btnPrev = createBtn('prev-biome', '‹ Prev', -0.37, 0.185, 0.18, 0.068, { fontSize: 28 });
+        this.titleBanner = createBtn('noop', 'Polar Aurora', -0.04, 0.185, 0.44, 0.068, {
           accent: 'rgba(255,255,255,0.2)',
           bg: 'rgba(15, 23, 42, 0.85)',
           fontSize: 25,
           sublabel: 'Starlight'
         });
-        this.btnNext = createBtn('next-biome', 'Next ›', 0.28, 0.145, 0.17, 0.068, { fontSize: 28 });
-        this.btnHide = createBtn('toggle-minimize', 'Hide', 0.425, 0.145, 0.1, 0.068, {
+        this.btnNext = createBtn('next-biome', 'Next ›', 0.28, 0.185, 0.17, 0.068, { fontSize: 28 });
+        this.btnHide = createBtn('toggle-minimize', 'Hide', 0.425, 0.185, 0.1, 0.068, {
           accent: '#94A3B8',
           fontSize: 24
         });
 
-        // ROW 2 (Center Highlight — User's Requested Day/Night + Solar Slider!)
-        this.btnDayNight = createBtn('toggle-day-night', 'Switch to Day', -0.32, 0.025, 0.28, 0.082, {
+        // ROW 2 (Center Highlight — Day/Night + Solar Slider)
+        this.btnDayNight = createBtn('toggle-day-night', 'Switch to Day', -0.32, 0.075, 0.28, 0.082, {
           accent: '#FBBF24',
           bg: 'rgba(120, 53, 15, 0.42)',
           activeBg: 'rgba(251, 191, 36, 0.92)',
           fontSize: 26
         });
 
-        // Interactive 3D Solar/Sky Track Bar (Width: 0.56m, X: -0.14 to +0.42)
+        // Interactive 3D Solar/Sky Track Bar
         this.solarTrackWidth = 0.54;
         this.solarTrackCenterX = 0.15;
         this.solarTrackEl = document.createElement('a-entity');
-        this.solarTrackEl.setAttribute('position', `${this.solarTrackCenterX} 0.025 0.005`);
+        this.solarTrackEl.setAttribute('position', `${this.solarTrackCenterX} 0.075 0.005`);
         this.solarTrackEl.classList.add('vr-interactive');
         this.solarTrackEl.dataset.vrSlider = 'solar';
 
@@ -352,18 +353,40 @@ if (typeof AFRAME !== 'undefined') {
           window.tabsirahBiomeManager?.setSolarElevation(targetSolar);
         });
 
-        // ROW 3 (Bottom): Vantage Presets + Reflect + MR + Action + Narrate + Audio
-        this.btnAerial = createBtn('zoom-aerial', 'Aerial', -0.43, -0.115, 0.11, 0.072, { fontSize: 22 });
-        this.btnEye = createBtn('zoom-eye', 'Eye', -0.31, -0.115, 0.10, 0.072, { active: true, fontSize: 21 });
-        this.btnCloseUp = createBtn('zoom-closeup', 'Close', -0.19, -0.115, 0.11, 0.072, { fontSize: 21 });
-        this.btnReflect = createBtn('toggle-reflect', 'Reflect', -0.055, -0.115, 0.135, 0.072, { accent: '#FBBF24', fontSize: 22 });
-        this.btnPassthrough = createBtn('toggle-passthrough', 'MR', 0.065, -0.115, 0.085, 0.072, { accent: '#38BDF8', fontSize: 22 });
-        this.btnAction = createBtn('biome-action', 'Action', 0.195, -0.115, 0.15, 0.072, { accent: '#34D399', fontSize: 21 });
-        this.btnNarrate = createBtn('narrate', 'Voice', 0.33, -0.115, 0.10, 0.072, { accent: '#34D399', fontSize: 21 });
-        this.btnAudio = createBtn('audio', 'Audio', 0.435, -0.115, 0.085, 0.072, { active: true, fontSize: 19 });
+        // ROW 3: Vantage Presets + Reflect + MR + Action + Narrate + Audio
+        this.btnAerial = createBtn('zoom-aerial', 'Aerial', -0.43, -0.055, 0.11, 0.070, { fontSize: 22 });
+        this.btnEye = createBtn('zoom-eye', 'Eye', -0.31, -0.055, 0.10, 0.070, { active: true, fontSize: 21 });
+        this.btnCloseUp = createBtn('zoom-closeup', 'Close', -0.19, -0.055, 0.11, 0.070, { fontSize: 21 });
+        this.btnReflect = createBtn('toggle-reflect', 'Reflect', -0.055, -0.055, 0.135, 0.070, { accent: '#FBBF24', fontSize: 22 });
+        this.btnPassthrough = createBtn('toggle-passthrough', 'MR', 0.065, -0.055, 0.085, 0.070, { accent: '#38BDF8', fontSize: 22 });
+        this.btnAction = createBtn('biome-action', 'Action', 0.195, -0.055, 0.15, 0.070, { accent: '#34D399', fontSize: 21 });
+        this.btnNarrate = createBtn('narrate', 'Voice', 0.33, -0.055, 0.10, 0.070, { accent: '#34D399', fontSize: 21 });
+        this.btnAudio = createBtn('audio', 'Audio', 0.435, -0.055, 0.085, 0.070, { active: true, fontSize: 19 });
+
+        // ROW 4 (Bottom): Spatial Innovation Controls — Wonder Brush, Cosmic Convergence, Mic Breath & MR Re-Anchor
+        this.btnWonderBrush = createBtn('wonder-brush', 'Brush', -0.36, -0.175, 0.22, 0.068, {
+          accent: '#F472B6',
+          activeBg: 'rgba(244, 114, 182, 0.92)',
+          fontSize: 23
+        });
+        this.btnConvergence = createBtn('convergence', 'Converge', -0.12, -0.175, 0.23, 0.068, {
+          accent: '#FBBF24',
+          activeBg: 'rgba(251, 191, 36, 0.92)',
+          fontSize: 23
+        });
+        this.btnMicBreath = createBtn('mic-breath', 'Mic Breath', 0.13, -0.175, 0.24, 0.068, {
+          accent: '#34D399',
+          activeBg: 'rgba(52, 211, 153, 0.92)',
+          fontSize: 23
+        });
+        this.btnReanchor = createBtn('reanchor-mr', 'Re-Anchor', 0.375, -0.175, 0.21, 0.068, {
+          accent: '#38BDF8',
+          activeBg: 'rgba(56, 189, 248, 0.92)',
+          fontSize: 22
+        });
 
         // Floating Mini Re-open Pill when minimized
-        this.miniBtn = createBtn('toggle-minimize', 'Show VR Controls', 0, -0.18, 0.3, 0.064, {
+        this.miniBtn = createBtn('toggle-minimize', 'Show VR Controls', 0, -0.22, 0.3, 0.064, {
           parent: this.root,
           accent: '#38BDF8',
           fontSize: 24
@@ -373,8 +396,17 @@ if (typeof AFRAME !== 'undefined') {
         // Visibility synced strictly with VR/MR mode
         const syncVisibility = () => {
           const inXR = Boolean(this.el.sceneEl?.is('vr-mode') || this.el.sceneEl?.is('ar-mode'));
+          const isAR = Boolean(this.el.sceneEl?.is('ar-mode'));
           this.root.setAttribute('visible', inXR);
           this.reflectRoot.setAttribute('visible', inXR && this.reflectVisible);
+          if (this.btnReanchor) {
+            const label = isAR ? 'Re-Anchor' : 'Portal';
+            this.btnReanchor.lastLabel = label;
+            redrawButtonTexture(this.btnReanchor.texEntry, label, {
+              ...this.btnReanchor.opts,
+              active: !isAR && Boolean(this.el.sceneEl?.components?.['xr-tabletop-portal']?.isTabletopMode)
+            });
+          }
         };
         this.onEnterVR = () => syncVisibility();
         this.onExitVR = () => syncVisibility();
@@ -382,7 +414,7 @@ if (typeof AFRAME !== 'undefined') {
         this.el.sceneEl?.addEventListener('exit-vr', this.onExitVR);
         syncVisibility();
 
-        // Sync with Solar, Zoom, Biome, and Narrator changes
+        // Sync with Solar, Zoom, Biome, Narrator, and Grand Prize Spatial States
         this.onSolarChanged = (evt) => {
           const s = typeof evt.detail?.solar === 'number' ? evt.detail.solar : -0.22;
           this.syncSolarUI(s);
@@ -393,9 +425,46 @@ if (typeof AFRAME !== 'undefined') {
         this.onStateChanged = (evt) => {
           this.syncStateUI(evt.detail || {});
         };
+        this.onWonderBrushState = (evt) => {
+          const active = Boolean(evt.detail?.active);
+          redrawButtonTexture(this.btnWonderBrush.texEntry, active ? 'Brush On' : 'Brush', {
+            ...this.btnWonderBrush.opts,
+            active
+          });
+        };
+        this.onConvergenceState = (evt) => {
+          const active = Boolean(evt.detail?.active);
+          redrawButtonTexture(this.btnConvergence.texEntry, active ? 'Converged' : 'Converge', {
+            ...this.btnConvergence.opts,
+            active
+          });
+        };
+        this.onMicBreathState = (evt) => {
+          const active = Boolean(evt.detail?.active);
+          const err = evt.detail?.error;
+          redrawButtonTexture(this.btnMicBreath.texEntry, active ? 'Mic Live' : (err ? 'No Mic' : 'Mic Breath'), {
+            ...this.btnMicBreath.opts,
+            active
+          });
+        };
+        this.onTabletopState = (evt) => {
+          const isAR = Boolean(this.el.sceneEl?.is('ar-mode'));
+          if (!isAR && this.btnReanchor) {
+            const active = Boolean(evt.detail?.active);
+            redrawButtonTexture(this.btnReanchor.texEntry, 'Portal', {
+              ...this.btnReanchor.opts,
+              active
+            });
+          }
+        };
+
         window.addEventListener('biome-solar-changed', this.onSolarChanged);
         window.addEventListener('biome-zoom-changed', this.onZoomChanged);
         window.addEventListener('biome-state-changed', this.onStateChanged);
+        window.addEventListener('tabsirah-wonder-brush-state', this.onWonderBrushState);
+        window.addEventListener('tabsirah-convergence-state', this.onConvergenceState);
+        window.addEventListener('tabsirah-mic-breath-state', this.onMicBreathState);
+        window.addEventListener('tabsirah-tabletop-state', this.onTabletopState);
 
         this.syncSolarUI(window.tabsirahBiomeManager?.solarElevation ?? -0.22);
       },
@@ -470,6 +539,7 @@ if (typeof AFRAME !== 'undefined') {
         if (now - this.lastTouchTime < 180) return;
         this.lastTouchTime = now;
         natureAudio.unlock();
+        window.dispatchEvent(new CustomEvent('trigger-haptic', { detail: { intensity: 0.32, duration: 22 } }));
 
         const mgr = window.tabsirahBiomeManager;
         if (id === 'prev-biome') mgr?.stepBiome(-1);
@@ -503,6 +573,18 @@ if (typeof AFRAME !== 'undefined') {
           document.getElementById('btn-narrate-toggle')?.click();
         } else if (id === 'audio') {
           document.getElementById('btn-audio-toggle')?.click();
+        } else if (id === 'wonder-brush') {
+          window.dispatchEvent(new CustomEvent('tabsirah-wonder-brush-toggle'));
+        } else if (id === 'convergence') {
+          window.dispatchEvent(new CustomEvent('tabsirah-convergence-toggle'));
+        } else if (id === 'mic-breath') {
+          micBreathMonitor.toggle().catch(() => {});
+        } else if (id === 'reanchor-mr') {
+          if (this.el.sceneEl?.is('ar-mode')) {
+            window.dispatchEvent(new CustomEvent('tabsirah-reanchor-tabletop'));
+          } else {
+            window.dispatchEvent(new CustomEvent('tabsirah-tabletop-toggle'));
+          }
         } else if (id === 'toggle-minimize') {
           this.isMinimized = !this.isMinimized;
           this.panel.setAttribute('visible', !this.isMinimized);
@@ -557,6 +639,10 @@ if (typeof AFRAME !== 'undefined') {
         window.removeEventListener('biome-solar-changed', this.onSolarChanged);
         window.removeEventListener('biome-zoom-changed', this.onZoomChanged);
         window.removeEventListener('biome-state-changed', this.onStateChanged);
+        window.removeEventListener('tabsirah-wonder-brush-state', this.onWonderBrushState);
+        window.removeEventListener('tabsirah-convergence-state', this.onConvergenceState);
+        window.removeEventListener('tabsirah-mic-breath-state', this.onMicBreathState);
+        window.removeEventListener('tabsirah-tabletop-state', this.onTabletopState);
         this.disposables.forEach((d) => d?.dispose());
       }
     });

@@ -155,14 +155,15 @@ if (typeof AFRAME !== 'undefined' && !AFRAME.components['spatial-discovery-beaco
       };
       this.onActivate = (evt) => {
         evt?.stopPropagation?.();
-        this.triggerDiscovery('pointer', evt, null);
+        const cursorId = evt?.detail?.cursorEl?.id || '';
+        this.triggerDiscovery('pointer', evt, null, cursorId);
       };
       this.onPinch = (evt) => {
         evt?.stopPropagation?.();
         const hp = evt?.detail?.handPos
           ? _handPos.set(evt.detail.handPos.x, evt.detail.handPos.y, evt.detail.handPos.z)
           : null;
-        this.triggerDiscovery('hand-pinch', evt, hp);
+        this.triggerDiscovery('hand-pinch', evt, hp, evt?.detail?.hand || '');
       };
 
       this.el.addEventListener('mouseenter', this.onHoverStart);
@@ -171,7 +172,7 @@ if (typeof AFRAME !== 'undefined' && !AFRAME.components['spatial-discovery-beaco
       this.el.addEventListener('pinchstarted', this.onPinch);
     },
 
-    triggerDiscovery: function (source = 'pointer', evt = null, handPos = null) {
+    triggerDiscovery: function (source = 'pointer', evt = null, handPos = null, handId = '') {
       const now = performance.now();
       if (now - this.lastTriggerTime < 420) return;
       this.lastTriggerTime = now;
@@ -207,7 +208,8 @@ if (typeof AFRAME !== 'undefined' && !AFRAME.components['spatial-discovery-beaco
         new CustomEvent('tabsirah-discovery-activated', {
           detail: {
             biomeId: this.data.biomeId,
-            source
+            source,
+            handId
           }
         })
       );
@@ -255,7 +257,7 @@ if (typeof AFRAME !== 'undefined' && !AFRAME.components['spatial-discovery-beaco
           if (!handEl?.object3D) continue;
           handEl.object3D.getWorldPosition(_handPos);
           if (_handPos.lengthSq() > 0.001 && _handPos.distanceTo(_nodeWorld) < 0.34) {
-            this.triggerDiscovery('hand-touch', null, _handPos);
+            this.triggerDiscovery('hand-touch', null, _handPos, handEl.id);
             break;
           }
         }
