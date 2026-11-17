@@ -1,7 +1,7 @@
 /**
  * Tabsirah: Earth's Biomes & Ecological Precision
- * State Manager orchestrating 5 procedural WebXR biomes,
- * 3-stage Explore -> Discover -> Reflect progression,
+ * State Manager orchestrating 4 procedural WebXR biomes,
+ * 4-stage Explore -> Discover -> Understand -> Reflect progression,
  * 3D spatial discovery beacons, Living Revelation toggles,
  * Real-World Video/Photo Field Drawer, Guided Journey controls,
  * Meta Quest hand interactions, and voice narration.
@@ -461,7 +461,7 @@ class BiomeManager {
       }, 5500);
     });
 
-    // Contextual Wonder Controls (Desert Star Compass & Mountains Isostasy)
+    // Contextual Wonder Controls (Desert Star Compass)
     this.compassLeftBtn?.addEventListener('click', () => {
       natureAudio.unlock();
       this.sceneEl?.emit('desert-compass-rotate', { delta: 0.24 }, false);
@@ -504,7 +504,7 @@ class BiomeManager {
       }
       if (this.tourStatusLabel && s.active) {
         const stagePart = s.stageLabel ? ` · ${s.stageLabel}` : '';
-        this.tourStatusLabel.textContent = `Cinematic · ${(s.index ?? 0) + 1}/${s.total ?? 5} · ${s.title || ''}${stagePart}`;
+        this.tourStatusLabel.textContent = `Cinematic · ${(s.index ?? 0) + 1}/${s.total ?? 4} · ${s.title || ''}${stagePart}`;
       }
       if (this.tourProgressFill && typeof s.progress === 'number') {
         this.tourProgressFill.style.width = `${Math.round(s.progress * 100)}%`;

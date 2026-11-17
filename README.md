@@ -1,143 +1,190 @@
-# Tabsirah (تَبْصِرَة) — WebXR Cosmic Contemplation & Living Biomes
+# Tabṣirah (تَبْصِرَة) — WebXR Living Biomes & Hands-First Contemplation
 
-> **Winner-Ready Submission for the [Meta Quest Start Developer Competition 2026](https://start-developer-competition-26.devpost.com/)**  
-> *An immersive, hands-first WebXR sanctuary across five living biomes uniting procedural GLSL shaders, real-time physics, tactile haptics, and contemplative reflection for Meta Quest 3, 3S, Pro, and 2.*
+> **Submission for the [Meta VR Start Developer Competition 2026](https://start-developer-competition-26.devpost.com/)**  
+> **Track:** Entertainment | **Build Path:** WebXR / Immersive Web (VR & Mixed Reality Passthrough)  
+> *A zero-asset, hands-first WebXR sanctuary across four living biomes uniting custom GLSL shaders, real-time optics and morphogenesis, tactile haptics, and contemplative reflection for Meta Quest 3, 3S, Pro, and 2.*
 
 [![WebXR Compatible](https://img.shields.io/badge/WebXR-Immersive%20VR%20%26%20AR-38BDF8.svg)](https://immersiveweb.dev/)
-[![Meta Quest Ready](https://img.shields.io/badge/Meta%20Quest-Hand%20Tracking%20%26%20Passthrough-34D399.svg)](https://www.meta.com/quest/)
+[![Meta Quest Ready](https://img.shields.io/badge/Meta%20Quest-Hands--First%20%26%20Passthrough-34D399.svg)](https://www.meta.com/quest/)
 [![Zero External Assets](https://img.shields.io/badge/Assets-100%25%20Procedural%20Code-FBBF24.svg)](#zero-asset-procedural-engine)
-[![Framework](https://img.shields.io/badge/A--Frame-1.5.0-EB5424.svg)](https://aframe.io/)
-[![Three.js](https://img.shields.io/badge/Three.js-r160+-000000.svg)](https://threejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-A78BFA.svg)](./LICENSE)
 
 ---
 
-## 🌟 Overview
+## Overview
 
-**Tabsirah (تَبْصِرَة)**—an Arabic word signifying *insight that awakens clear vision and deep reflection*—is an innovative WebXR application engineered specifically for standalone VR headsets (Meta Quest Browser) and desktop WebXR runtimes. 
+**Tabṣirah (تَبْصِرَة)**—an Arabic word meaning *insight that awakens clear vision and deep reflection*—is a browser-native WebXR spatial experience built with A-Frame 1.5.0 and Three.js for standalone VR headsets (**Meta Quest Browser**) and modern desktop browsers.
 
-Tabsirah contains **zero external 3D models, textures, or audio recordings (0 KB external payload)**. Every landscape, organism, atmospheric scattering ray, water caustic, and sound effect is generated in real-time procedural code.
+Every scene is engineered with **100% procedural code and zero external 3D models, texture files, or pre-recorded audio (0 KB external asset payload)**. Terrain geometry, atmospheric scattering, water caustics, living organisms, spatial soundscapes, and tactile shaders are synthesized live in real time so the experience opens instantaneously with locked 60+ FPS ergonomics—seated or standing.
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                                 TABSIRAH (تَبْصِرَة)                               │
-│                      WebXR Spatial Sanctuary & Contemplation                      │
-├─────────────────┬─────────────────┬──────────────────┬────────────────┬───────────┤
-│ 1. Polar Aurora │ 2. Rainforest   │ 3. Coral Reef    │ 4. Desert      │ 5. Alpine │
-│ Geomagnetic     │ Water-Droplet   │ Turing Morphogen │ Subsurface     │ Peg Roots │
-│ Solar Arcs      │ Optical Prism   │ Boids Schooling  │ Artesian Spring│ Isostasy  │
-└─────────────────┴─────────────────┴──────────────────┴────────────────┴───────────┘
+┌────────────────────────────────────────────────────────────────────────────┐
+│                           TABṢIRAH (تَبْصِرَة)                             │
+│          Explore  ─▶  Discover  ─▶  Understand  ─▶  Reflect                │
+├──────────────────┬──────────────────┬──────────────────┬───────────────────┤
+│ 1. Polar Aurora  │ 2. Rainforest    │ 3. Coral Reef    │ 4. Desert Oasis   │
+│ Geomagnetic Arcs │ L-System Canopy  │ Wave Caustics    │ Aeolian Sand Dunes│
+│ Solar Conductor  │ Droplet Prism    │ Boids & Turing   │ Aquifer & Polaris │
+└──────────────────┴──────────────────┴──────────────────┴───────────────────┘
 ```
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-### 1. Five Scientifically Authentic Living Biomes
-- **1. Polar Aurora (`aurora`):** Geomagnetic dipole arcs, volumetric GLSL auroral raymarching, Arctic ice floes, and solar wind conductor mechanics.
-- **2. Living Rainforest (`rainforest`):** Dynamic canopy light, interactive water-droplet optical prism, and hand-gesture tropical rain summoning.
-- **3. Coral Cathedral (`ocean`):** Real-time moving optical caustics, decentralized Boids fish schooling, and Gray-Scott reaction-diffusion coral morphogenesis.
-- **4. Desert Oasis (`desert`):** Aeolian ripple sand dunes, Rayleigh/Mie twilight atmospheric scattering, and deep artesian groundwater aquifers.
-- **5. Alpine Peaks (`mountains`):** Glaciated Matterhorn horn peaks with razor-sharp arêtes, turquoise glacial tarn, cascading waterfalls with spray mist, agile Alpine Ibex and sentry marmots, and subterranean peg roots (*"الأوتاد"*) demonstrating Airy isostasy.
+### 1. Four Scientifically Authentic Living Biomes
+1. **Polar Aurora (`aurora` — 69.65°N Tromsø Arctic Circle):** Multi-octave fractional Brownian motion (fBm) auroral curtains (`557.7 nm` oxygen green, `630 nm` red, `427.8 nm` nitrogen violet), drifting Arctic ice floes, fjord mirror caustics, and interactive **Solar Wind Conductor** sweeping gestures that build toward a coronal substorm burst.
+2. **Living Rainforest (`rainforest` — 3.46°S Amazon Basin):** Murray-branching L-system ancient trees, crepuscular god rays, cascading waterfall particles, interactive palm-raise **Rain Summoning**, and a zoom-in **Water-Droplet Optical Prism** (`water-prism-optics`) that refracts a live 7-band Snell/Cauchy rainbow spectrum and floor caustics.
+3. **Coral Cathedral (`ocean` — 27.25°N Red Sea Reef):** Real-time refractive water caustics (`1.333` seawater IOR), decentralized Boids schooling fish, gliding manta rays and sea turtles, touch-restorative pale coral clusters, and macro-to-micro **Gray-Scott Reaction-Diffusion Turing Coral** and **Geodesic Voronoi** lenses.
+4. **Desert Oasis (`desert` — 31.14°N Sahara Erg):** Wind-sculpted aeolian dune ripples, Rayleigh/Mie atmospheric solar scattering from High Sun through Twilight to Starlight, a subterranean **Artesian Oasis Aquifer** reveal, and an interactive **Star Compass** to align Polaris to True North.
 
 ### 2. Multi-Sensory Tactile Touch System (`js/components/tactile-touch-fx.js`)
-Touching, pinching, or pointing at any surface unleashes:
-- **Custom GLSL Shockwave:** 3D spherical expanding ring with razor-sharp chromatic dispersion (cyan, emerald, gold edges).
-- **16-Fold Islamic Lattice:** Interference pattern dissolving into sparkling starlight embers.
-- **Spatial Haptics:** Directional vibration pulses transmitted to Meta Quest controllers and hand actuators.
-- **Procedural Audio Signatures:** Biome-adaptive harmonic chords synthesized in real-time Web Audio API.
+Reaching out with Meta Quest Hand Tracking, pinching an interactive node, or clicking in 3D triggers:
+- **Custom GLSL Chromatic Shockwaves:** Expanding spherical rings with split cyan, emerald, and gold dispersion edges.
+- **16-Fold Islamic Geometric Lattice:** Interference patterns dissolving into pooled starlight particles with zero per-frame garbage collection.
+- **Spatial Haptics & Web Audio Harmonics:** Directional vibration pulses and biome-tuned synthesized chords.
 
-### 3. Hands-First Meta Quest Experience
-- **Direct Fingertip Proximity & Touch:** Seamless contact with 3D surfaces.
-- **Two-Hand Spread Zoom:** Smooth transition into macro-to-micro living lenses.
-- **Solar Wind Conductor:** Sky-sweeping motions bend geomagnetic dipole arcs.
-- **Rain-Summoning Palms:** Raising open palms triggers rainfall and lightning.
+### 3. Hands-First Meta Quest & Controller Support
+- **Bare-Hand Tracking:** Direct fingertip contact on beacons and the waist-height **3D Spatial VR/MR Console**, pinch-to-activate nodes, **Two-Hand Spread Zoom** across Macro-to-Micro lenses, left-hand pinch horizontal scrub for Day/Night solar elevation, sky sweeps in Aurora, and upward palm raises in Rainforest.
+- **Touch Controllers:** Laser pointer selection, thumbstick X-axis solar scrubbing, thumbstick Y-axis zoom, `A`/`X` Day/Night toggle, and `B`/`Y` biome cycling.
 
-### 4. Mixed Reality (MR) Passthrough Diorama Mode
-With one tap, the virtual sky dome dissolves into your physical room, casting a circular holographic biome diorama right onto your tabletop or floor.
+### 4. Mixed Reality (MR) Passthrough Diorama
+One tap on **MR Passthrough** dissolves the virtual sky dome and renders the active living biome as a clipped, circular `0.85 m` holographic tabletop diorama floating in your physical room.
 
-### 5. Autonomous Cinematic Director Mode
-Press `C` or tap the **Cinematic Mode** button to relax while an intelligent virtual cinematographer guides you through aerial vistas and macro close-ups across all five biomes.
-
-### 6. Stillness Sanctuary (`S` key)
-Spawn a 16-fold Islamic geometric star mandala overhead pulsing in real time to guided 4-7-8 breathing cycles and 3D cymatic audio frequencies.
+### 5. Autonomous Cinematic Mode, Stillness Sanctuary & Real-World Media
+- **Cinematic Mode:** Guided autopilot smoothly sweeps camera vantage, solar elevation, discovery beacons, field photography, scientific context, and spoken narration across all four biomes.
+- **Stillness Sanctuary (`S` key):** Slows motion to `0.42x`, summons a **16-fold Islamic Geometric Star Mandala** + **3D Cymatic Visualizer** overhead, and runs a 14-second contemplative breath pacer (`4s inhale · 4s hold · 6s exhale`).
+- **Real-World Documentary Drawer:** Pairs each procedural simulation with real-world coordinates, Wikimedia Commons field photography, and embedded documentary video.
 
 ---
 
-## 🛠️ Technical Architecture
+## Zero-Asset Procedural Engine
+
+- **0 KB External Textures:** Bark, sand ripples, basalt reliefs, glow sprites, and VR console typography are synthesized at runtime via HTML5 Canvas & GPU textures.
+- **0 KB External Models:** Fauna, flora, droplets, coral domes, and geometric mandalas are built procedurally in Three.js (`InstancedMesh`, lathes, extrusions, icosahedrons).
+- **0 KB External Audio:** Pink-noise wind/water filters, aurora chimes, whale calls, birdsong, oud-inspired desert plucks, and singing-bowl drones are generated live via the Web Audio API alongside Web Speech narration.
+- **Zero-GC Frame Loop:** Pre-allocated `THREE.Vector3`, `THREE.Quaternion`, and `THREE.Matrix4` objects keep frame timing smooth for standalone Quest 3/3S performance.
+
+---
+
+## Project Structure
 
 ```
 /
-├── index.html                  # WebXR entry point, UI overlay, and A-Frame scene
-├── js/
-│   ├── components/
-│   │   ├── biome-generators.js    # Procedural terrain, fauna, flora & geology
-│   │   ├── tactile-touch-fx.js    # Flagship GLSL touch shockwaves & haptics
-│   │   ├── nature-shaders.js      # GLSL aurora, sky dome, caustics, and water
-│   │   ├── nature-audio.js        # 100% procedural Web Audio synthesizer
-│   │   ├── light-optics.js        # Water-droplet prism & Turing morphogen
-│   │   ├── sacred-dynamics.js     # 16-fold star mandala & breathing physics
-│   │   ├── scientific-telemetry.js# Real-time WebXR telemetry & haptics
-│   │   ├── zoom-detail-system.js  # Macro-to-micro living lens controller
-│   │   └── wow-mechanics.js       # Solar wind conductor & rain gesture
-│   ├── config/
-│   │   └── earth-biomes-data.js   # Biome metadata, scientific context & Tafsir
-│   └── state/
-│       └── biome-manager.js       # Central orchestrator & event bus
-└── DEVPOST_SUBMISSION.md       # Turnkey Devpost Hackathon submission package
+├── index.html                        # Entry point, WebXR <a-scene>, progressive HUD & overlays
+├── LICENSE                           # MIT License
+├── README.md                         # Project documentation & setup guide
+├── DEVPOST_SUBMISSION.md             # Meta VR Start Developer Competition 2026 submission pack
+├── package.json                      # Vite dev/build/lint scripts
+└── js/
+    ├── config/
+    │   └── earth-biomes-data.js      # 4-biome definitions, Qur'anic texts, science & media
+    ├── state/
+    │   └── biome-manager.js          # Central state machine, HUD bindings, hand gestures & XR mode
+    └── components/
+        ├── biome-generators.js       # Procedural terrain, flora, fauna, aquifer & compasses
+        ├── tactile-touch-fx.js       # Custom GLSL shockwaves, lattice interference & haptics
+        ├── nature-shaders.js         # Aurora fBm, atmospheric sky, caustics & wonder ripples
+        ├── nature-audio.js           # 100% procedural Web Audio synthesizer & voice narrator
+        ├── light-optics.js           # Interactive Water-Droplet Optical Prism (7-band Snell)
+        ├── sacred-dynamics.js        # Turing Coral PDE, Geodesic Voronoi & 16-fold Mandala
+        ├── zoom-detail-system.js     # Macro-to-Micro living lens LOD layers
+        ├── vr-spatial-console.js     # Waist-height 3D VR/MR console & controller shortcuts
+        ├── gesture-scale-manager.js  # Two-hand pinch-and-spread diorama scaling
+        ├── scientific-telemetry.js   # Real-time WebXR haptic actuator bridge
+        ├── wow-mechanics.js          # Autonomous Cinematic Director autopilot
+        ├── wow-postprocessing.js     # Selective luminous bloom post-processing
+        └── ...                       # Particle weather, cymatics, spatial discovery & PBR utils
 ```
 
-### Zero-Asset Procedural Engine
-- **0 KB external textures:** All albedo and normal maps are synthesized at runtime via HTML5 2D Canvas and `DataTexture`.
-- **0 KB external 3D models:** All fauna (Alpine Ibex, Golden Eagles, Camels, Manta Rays, Sheep, Marmots) are constructed using composite 3–12 part `THREE.Group` meshes.
-- **0 KB external audio files:** Pink-noise filters, bird songs, eagle screeches, marmot whistles, and singing bowls are synthesized live in Web Audio API.
-- **Zero Garbage Collection:** Zero vector allocations inside the per-frame `tick()` loop.
-
 ---
 
-## ⌨️ Controls & Keyboard Shortcuts
-
-| Key / Gesture | Action |
-| :--- | :--- |
-| `1` – `5` | Switch between biomes (1: Aurora, 2: Rainforest, 3: Ocean, 4: Desert, 5: Alpine) |
-| `Space` | Advance to next biome (`Shift + Space` for previous) |
-| `C` | Toggle autonomous **Cinematic Mode** |
-| `S` | Toggle **Stillness Sanctuary** (breathing mandala + cymatics) |
-| `X` | Toggle **X-Ray Subterranean Mode** (aquifer / tectonic peg roots) |
-| `+` / `-` | Zoom in / Zoom out across Macro-to-Micro living lenses |
-| `H` | Hide / Show bottom control dock (Zen Mode) |
-| `Arrow Keys` | Rotate camera vantage or zoom |
-| **Quest Pinch** | Direct pinch interaction with specimens and living lenses |
-| **Quest Reach** | Direct fingertip contact triggers tactile shockwaves and haptics |
-
----
-
-## 💻 Local Development & Setup
+## How to Run & Test
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm or bun
+- **Node.js** `v18+` and **npm** (or `bun`)
+- Modern desktop browser (**Chrome**, **Edge**, or **Firefox**) or **Meta Quest Browser** on Meta Quest 3 / 3S / Pro / 2
 
-### Installation
+### 1. Run Locally on Desktop
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd tabsirah-webxr
-
 # Install dependencies
 npm install
 
-# Start development server
+# Start the development server on http://localhost:3000
 npm run dev
 ```
+Open `http://localhost:3000` in your browser, click **Begin Exploration** (or **Start Cinematic Tour**), and drag/click to explore in 360°.
 
-Visit `http://localhost:3000` in desktop Chrome/Edge or open it inside the **Meta Quest Browser** on your headset.
+### 2. Build & Verify Production Bundle
+```bash
+# Type-check with TypeScript
+npm run lint
+
+# Build production static bundle into dist/
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+### 3. Run on Meta Quest Headsets (Quest 3 / 3S / Pro / 2)
+> **Important WebXR Requirement:** Meta Quest Browser requires a **secure HTTPS origin** (or `localhost` via USB ADB forwarding) to enable `immersive-vr` and `immersive-ar` Passthrough sessions. Plain `http://<LAN-IP>:3000` addresses are treated as insecure by the browser and will hide WebXR entry.
+
+Choose one of the following methods to test in headset:
+
+- **Option A — Live HTTPS Deployment (Recommended for Judges & Sharing):**  
+  Deploy `dist/` (or connect this repo) to any static HTTPS host (e.g., Vercel, Netlify, Cloudflare Pages, GitHub Pages) and open the `https://` URL directly inside **Meta Quest Browser**.
+- **Option B — Local HTTPS Tunnel (Quick Wi-Fi Testing):**  
+  Run `npm run dev` locally, then expose port `3000` over HTTPS using `ngrok http 3000` or `npx localtunnel --port 3000`, and open the generated `https://` URL in **Meta Quest Browser**.
+- **Option C — USB ADB Port Forwarding (Developer Mode):**  
+  With your Quest connected via USB and Developer Mode enabled:
+  ```bash
+  adb reverse tcp:3000 tcp:3000
+  ```
+  Then visit `http://localhost:3000` inside **Meta Quest Browser** (`localhost` is treated as a secure context).
 
 ---
 
-## 📜 Devpost Competition Documents
-For full submission pitch, video demonstration storyboard, judges' testing guide, and track alignment, consult [DEVPOST_SUBMISSION.md](./DEVPOST_SUBMISSION.md).
+## Controls & Shortcuts
+
+### Desktop (Keyboard & Mouse)
+
+| Input | Action |
+| :--- | :--- |
+| `1` – `4` | Switch biome (`1`: Polar Aurora, `2`: Living Rainforest, `3`: Coral Cathedral, `4`: Desert Oasis) |
+| `Space` / `Shift + Space` | Advance to next biome / previous biome |
+| `E` or `Enter` | Trigger primary biome revelation (Magnetic Shield, Summon Rain, Reef Surge, Aquifer) |
+| `S` | Toggle **Stillness Sanctuary** (16-fold star mandala, cymatics & 14s breath pacer) |
+| `+` / `=` or `PageUp` | Zoom **In** toward Macro-to-Micro living lenses |
+| `-` / `_` or `PageDown` | Zoom **Out** toward Aerial panorama |
+| `Arrow Keys` | Rotate camera (`Shift + Up/Down` zooms; press `Z` to toggle Arrow Rotate/Zoom mode) |
+| `[` / `]` | Lower / Raise Solar Elevation (Starlight ↔ Twilight ↔ Golden Hour ↔ High Sun) |
+| `B` | Toggle luminous **Bloom Glow** post-processing |
+| `H` | Hide / Show bottom control dock |
+| `Esc` | Exit Stillness Sanctuary, close modal, or close controls popover |
+| `Mouse Drag / Click` | Look around 360° and click any 3D beacon or surface to trigger tactile shockwaves |
+
+### Meta Quest (Hands-First & Controllers)
+
+| Mode / Input | Action |
+| :--- | :--- |
+| **Fingertip Reach / Touch** | Directly touch 3D beacons, specimens, or the waist-height 3D Spatial Console buttons |
+| **Single-Hand Pinch** | Activate nearest discovery node or interactive lens |
+| **Two-Hand Pinch Spread** | Spread / bring hands together to smoothly zoom across Macro-to-Micro scales |
+| **Left-Hand Pinch + Horizontal Sweep** | Scrub Day / Night solar elevation continuously |
+| **Sky Sweep (Polar Aurora)** | Sweep hand across the sky to conduct geomagnetic arcs toward a substorm burst |
+| **Raise Palms (Rainforest)** | Lift hands above `1.65 m` to summon warm tropical rainfall |
+| **Controller Thumbsticks** | `Left/Right`: Solar Day/Night scrub · `Up/Down`: Aerial/Close-Up zoom |
+| **Controller `A`/`X` · `B`/`Y`** | `A`/`X`: Toggle Daylight/Starlight · `B`/`Y`: Next Biome |
 
 ---
 
-## 📄 License
-Released under the MIT License. Designed and built with pride for the **Meta Quest Start Developer Competition 2026**.
+## Hackathon Submission Docs
+
+See [DEVPOST_SUBMISSION.md](./DEVPOST_SUBMISSION.md) for the complete **Meta VR Start Developer Competition 2026** copy-paste form fields, track & division rationale, under-3-minute demo storyboard, judging criteria alignment, and judge testing guide.
+
+---
+
+## License
+
+Released under the [MIT License](./LICENSE). Designed and built for the **Meta VR Start Developer Competition 2026**.
