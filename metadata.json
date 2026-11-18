@@ -1,0 +1,6 @@
+{
+  "name": "Tabsirah — WebXR Cosmic Contemplation & Decision Balance",
+  "description": "An interactive WebXR (MR/VR) experience built with A-Frame 1.5.0 for contemplating the precision of creation across subatomic, cosmic, and natural scales alongside a holographic decision balance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
